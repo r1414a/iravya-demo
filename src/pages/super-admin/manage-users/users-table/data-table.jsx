@@ -1,7 +1,9 @@
+// data-table.jsx
 import {
     flexRender,
     getCoreRowModel,
     useReactTable,
+    getPaginationRowModel,
     getFilteredRowModel
 } from "@tanstack/react-table"
 
@@ -15,30 +17,25 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import EditUserDrawer from "./EditUserDrawer"
 
-export function DataTable({
-    columns,
-    data = [],
-    page = 1,
-    totalPages = 1,
-    onPrevious,
-    onNext,
-    isFetching = false
-}) {
-
-    console.log(page,totalPages)
-    // const [open, setOpen] = useState(false)
+export function DataTable({ columns, data }) {
     const [columnFilters, setColumnFilters] = useState([])
-    // const [selectedUser, setSelectedUser] = useState(null)
 
     const table = useReactTable({
         data,
         columns,
+        state: {
+            columnFilters,
+        },
+        onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
-        state: { columnFilters },
-        onColumnFiltersChange: setColumnFilters,
+        getPaginationRowModel: getPaginationRowModel(),
+        initialState: {
+            pagination: {
+                pageSize: 5,
+            },
+        },
     })
 
     return (
@@ -49,35 +46,24 @@ export function DataTable({
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <TableHead key={header.id} className="font-bold">
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                              header.column.columnDef.header,
+                                              header.getContext()
+                                          )}
                                 </TableHead>
                             ))}
                         </TableRow>
                     ))}
                 </TableHeader>
 
-                 <TableBody>
-                    {isFetching ? (
-                        <TableRow>
-                            <TableCell
-                                colSpan={columns.length}
-                                className="text-center py-6 text-gray-500"
-                            >
-                                Loading users...
-                            </TableCell>
-                        </TableRow>
-                    ) : table.getRowModel().rows.length ? (
+                <TableBody>
+                    {table.getRowModel().rows.length ? (
                         table.getRowModel().rows.map((row) => (
                             <TableRow
                                 key={row.id}
-                                className="hover:bg-muted cursor-pointer"
-                                // onClick={() => {
-                                //     setSelectedUser(row.original);
-                                //     setOpen(true);
-                                // }}
+                                className="hover:bg-muted"
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id}>
@@ -95,42 +81,38 @@ export function DataTable({
                                 colSpan={columns.length}
                                 className="text-center py-6 text-gray-500"
                             >
-                                No drivers found
+                                No users found
                             </TableCell>
                         </TableRow>
                     )}
                 </TableBody>
             </Table>
 
-            <div className="flex items-center justify-between px-4 py-3">
+            {/* Pagination */}
+            <div className="flex items-center justify-between px-4 py-3 border-t">
                 <div className="text-sm text-black font-semibold">
-                    Page {page} of {totalPages}
+                    Page {table.getState().pagination.pageIndex + 1} of{" "}
+                    {table.getPageCount()}
                 </div>
 
                 <div className="flex gap-2">
                     <Button
-                        onClick={onPrevious}
-                        disabled={page <= 1}
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
                         className="bg-maroon text-xs hover:bg-maroon-dark cursor-pointer disabled:bg-gray-200 disabled:text-black"
                     >
                         Previous
                     </Button>
 
                     <Button
-                        onClick={onNext}
-                        disabled={page >= totalPages}
+                        onClick={() => table.nextPage()}
+                        disabled={!table.getCanNextPage()}
                         className="bg-maroon text-xs hover:bg-maroon-dark cursor-pointer disabled:bg-gray-200 disabled:text-black"
                     >
                         Next
                     </Button>
                 </div>
             </div>
-
-            {/* <EditUserDrawer
-                open={open}
-                setOpen={setOpen}
-                selectedUser={selectedUser}
-            /> */}
         </div>
     )
 }
