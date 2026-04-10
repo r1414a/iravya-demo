@@ -1,0 +1,117 @@
+    import {
+        flexRender,
+        getCoreRowModel,
+        useReactTable,
+        getPaginationRowModel,
+        getFilteredRowModel,
+    } from "@tanstack/react-table"
+
+    import {
+        Table,
+        TableBody,
+        TableCell,
+        TableHead,
+        TableHeader,
+        TableRow,
+    } from "@/components/ui/table"
+    import { Button } from "@/components/ui/button"
+    import { useState } from "react"
+
+    export function DataTable({ columns, data }) {
+        const [columnFilters, setColumnFilters] = useState([])
+
+        const table = useReactTable({
+            data,
+            columns,
+            state: {
+                columnFilters,
+            },
+            onColumnFiltersChange: setColumnFilters,
+            getCoreRowModel: getCoreRowModel(),
+            getFilteredRowModel: getFilteredRowModel(),
+            getPaginationRowModel: getPaginationRowModel(),
+            initialState: {
+                pagination: {
+                    pageSize: 5,
+                },
+            },
+        })
+
+        return (
+            <div className="border rounded-lg">
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id} className="font-bold">
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+
+                    <TableBody>
+                        {table.getRowModel().rows.length ? (
+                            table.getRowModel().rows.map((row) => (
+                                <TableRow
+                                    key={row.id}
+                                    className="hover:bg-muted"
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(
+                                                cell.column.columnDef.cell,
+                                                cell.getContext()
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell
+                                    colSpan={columns.length}
+                                    className="text-center py-6 text-gray-500"
+                                >
+                                    No drivers found
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+
+                {/* Pagination */}
+                <div className="flex items-center justify-between px-4 py-3 border-t">
+                    <div className="text-sm text-black font-semibold">
+                        Page {table.getState().pagination.pageIndex + 1} of{" "}
+                        {table.getPageCount()}
+                    </div>
+
+                    <div className="flex gap-2">
+                        <Button
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                            className="bg-maroon text-xs hover:bg-maroon-dark cursor-pointer disabled:bg-gray-200 disabled:text-black"
+                        >
+                            Previous
+                        </Button>
+
+                        <Button
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                            className="bg-maroon text-xs hover:bg-maroon-dark cursor-pointer disabled:bg-gray-200 disabled:text-black"
+                        >
+                            Next
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
