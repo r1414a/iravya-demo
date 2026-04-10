@@ -244,6 +244,16 @@ function LiveMapbox({ routePoints, fraction, tripData }) {
 }, [fraction, routePoints])
 
 
+useEffect(() => {
+  const map = mapRef.current
+  if (!map) return
+
+  setTimeout(() => {
+    map.resize()
+  }, 300)
+}, [routePoints])
+
+
   // Update truck marker position smoothly
   useEffect(() => {
     const map = mapRef.current
@@ -263,7 +273,12 @@ function LiveMapbox({ routePoints, fraction, tripData }) {
     }
   }, [fraction, routePoints])
 
-  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
+  return  (
+  <div
+    ref={containerRef}
+    className="w-full h-full min-h-[300px]"
+  />
+)
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
@@ -324,17 +339,17 @@ export default function TrackingForm({ MOCK_TRIPS }) {
   useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current) }, [])
 
   return (
-    <div className="flex bg-slate-50 overflow-hidden" style={{ height: "calc(100vh - 80px)" }}>
+   <div className="flex flex-col lg:flex-row bg-slate-50 min-h-screen lg:h-[calc(100vh-80px)]">
 
       {/* ── LEFT SIDEBAR — white, matches your manage pages ── */}
-      <div className="w-125 shrink-0 flex flex-col bg-white border-t border-slate-200 overflow-y-auto">
+      <div className="w-full lg:w-125 shrink-0 flex flex-col bg-white border-t lg:border-r border-slate-200 overflow-y-auto max-h-[60vh] lg:max-h-full">
 
         {/* Sticky search strip */}
         <div className="px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
           <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-2">
             Track shipment
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <input
               value={tripIdInput}
               onChange={e => { setTripIdInput(e.target.value); setError("") }}
@@ -428,7 +443,7 @@ export default function TrackingForm({ MOCK_TRIPS }) {
                   style={{ width: `${pct}%`, background: statusCfg.bar }}
                 />
               </div>
-              <div className="flex gap-3 mt-3">
+              <div className="grid grid-cols-3 gap-2 mt-3">
                 {[
                   { label: "Speed", value: fraction >= 1 ? "0 km/h" : tripData.trip.speed },
                   { label: "ETA", value: tripData.trip.eta },
@@ -480,7 +495,7 @@ export default function TrackingForm({ MOCK_TRIPS }) {
               </div>
 
               {/* Same bg-gray-50 border-gray-100 rounded-lg grid as your manage pages */}
-              <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
                 {[
                   { label: "Experience", value: tripData.driver.experience },
                   { label: "Total trips", value: tripData.driver.trips.toLocaleString() },
@@ -614,11 +629,11 @@ export default function TrackingForm({ MOCK_TRIPS }) {
       </div>
 
       {/* ── RIGHT — full height Mapbox map ── */}
-      <div className="flex-1 relative">
+      <div className="flex-1 relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-full">
 
         {/* Map legend — bottom right */}
         {tripData && !routeLoading && (
-          <div className="absolute bottom-5 right-5 z-10 bg-white rounded-xl border border-slate-200 shadow-md px-4 py-3 text-xs space-y-1.5">
+          <div className="absolute bottom-3 right-3 sm:bottom-5 sm:right-5 ... text-[10px] sm:text-xs">
             <div className="flex items-center gap-2">
               <span className="w-6 h-1.5 rounded-full bg-green-600 inline-block" />
               <span className="text-slate-600">Route covered</span>

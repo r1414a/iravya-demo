@@ -18,6 +18,7 @@ import {
 import { selectUser, clearUser } from "@/lib/features/auth/authSlice"
 import { useDispatch, useSelector } from "react-redux"
 import { ROLES } from "@/constants/constant"
+import { showSuccessToast } from "@/lib/utils/showSuccessToast"
 
 export default function Header() {
   const { user } = useSelector(selectUser)
@@ -27,6 +28,7 @@ export default function Header() {
   const handleLogout = () => {
     dispatch(clearUser())
     localStorage.removeItem("demo-auth-user")
+    showSuccessToast('See you soon!.')
     navigate("/", { replace: true })
   }
 
@@ -74,7 +76,7 @@ export default function Header() {
             <div className="flex items-center cursor-pointer">
               <span className="hidden sm:block text-xs font-semibold text-white tracking-wide">
                 {user
-                  ? `${displayName} - (${roleText})`
+                  ? `${displayName}`
                   : "Admin Manager"}
               </span>
 

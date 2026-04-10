@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useDispatch } from "react-redux"
 import { setUser } from "@/lib/features/auth/authSlice"
 import { CREDENTIALS } from "@/constants/constant"
+import { showSuccessToast } from "@/lib/utils/showSuccessToast"
 
 function EyeIcon({ show }) {
     return show ? (
@@ -95,6 +96,7 @@ export default function Auth() {
 
     setIsLoading(false)
 
+    showSuccessToast(`Good morning, ${fakeUser.first_name} ${fakeUser.last_name}`)
     const targetPath =
         matchedCred.badge === "super_admin" ? "/admin" : "/dc"
 

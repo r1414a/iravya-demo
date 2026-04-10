@@ -378,7 +378,7 @@ function DriverMap({ routePoints, fraction, userLocation, stops }) {
     }, [userLocation])
 
 
-    return <div ref={ref} style={{ width: "100%", height: "100%" }} />
+    return <div ref={ref} className="w-full h-full min-h-[300px]" />
 }
 
 export default function DriverDashboard() {
@@ -426,30 +426,30 @@ export default function DriverDashboard() {
                 const pos = interpolate(pts, f)
                 console.log("pos", pos);
 
-               if (pos) {
-    const pendingStops = stops.filter(stop => stop.status === "pending")
+                if (pos) {
+                    const pendingStops = stops.filter(stop => stop.status === "pending")
 
-    if (pendingStops.length) {
-        let nearest = null
-        let nearestDist = Infinity
+                    if (pendingStops.length) {
+                        let nearest = null
+                        let nearestDist = Infinity
 
-        for (const stop of pendingStops) {
-            const d = distM(pos[1], pos[0], stop.lat, stop.lng) // pos = [lng, lat]
-            if (d < nearestDist) {
-                nearestDist = d
-                nearest = stop
-            }
-        }
+                        for (const stop of pendingStops) {
+                            const d = distM(pos[1], pos[0], stop.lat, stop.lng) // pos = [lng, lat]
+                            if (d < nearestDist) {
+                                nearestDist = d
+                                nearest = stop
+                            }
+                        }
 
-        if (nearest && nearestDist < 500) {
-            setNearStopId(nearest.id)
-        } else {
-            setNearStopId(null)
-        }
-    } else {
-        setNearStopId(null)
-    }
-}
+                        if (nearest && nearestDist < 500) {
+                            setNearStopId(nearest.id)
+                        } else {
+                            setNearStopId(null)
+                        }
+                    } else {
+                        setNearStopId(null)
+                    }
+                }
             }, 1200)
         }).catch(() => { }).finally(() => setRouteLoading(false))
         return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
@@ -553,7 +553,7 @@ export default function DriverDashboard() {
 
 
             {/* Top bar — unchanged */}
-            <div className="bg-maroon text-white px-4 py-3 flex items-center justify-between shrink-0 shadow-md">
+            <div className="bg-maroon text-white px-3 sm:px-4 py-3 flex items-center justify-between shrink-0 shadow-md">
                 <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg shrink-0">🚛</div>
                     <div>
@@ -572,7 +572,7 @@ export default function DriverDashboard() {
                 </div>
             </div>
 
-            <div className="flex min-h-[93vh] bg-slate-50 overflow-hidden relative">
+            <div className="flex flex-col lg:flex-row min-h-screen lg:min-h-[93vh] bg-slate-50 overflow-hidden relative">
 
                 {/* Emergency banner */}
                 {emergencySent && (
@@ -595,7 +595,7 @@ export default function DriverDashboard() {
 
 
                 {/* ── Bottom tabbed panel ── */}
-                <div className="bg-white basis-[28%] border-t border-slate-200 shrink-0 flex flex-col">
+                <div className="bg-white w-full lg:basis-[28%] border-t lg:border-t-0 lg:border-r border-slate-200 shrink-0 flex flex-col max-h-[55vh] lg:max-h-full">
 
                     {/* Progress bar with milestone dots */}
                     <div className="px-4 pt-3 pb-2 border-b border-slate-100 shrink-0">
@@ -671,7 +671,7 @@ export default function DriverDashboard() {
 
                         {/* STOPS TAB */}
                         {activeTab === "stops" && (
-                            <div className="px-4 py-3 flex flex-col gap-3">
+                            <div className="px-3 sm:px-4 py-3 flex flex-col gap-3">
                                 {completedCount === stops.length ? (
                                     <div className="text-center py-8">
                                         <div className="text-4xl mb-3">🎉</div>
@@ -715,7 +715,7 @@ export default function DriverDashboard() {
 
                         {/* ALERTS TAB */}
                         {activeTab === "alerts" && (
-                            <div className="px-4 py-3">
+                            <div className="px-3 sm:px-4 py-3">
                                 {driverAlerts.length === 0 ? (
                                     <div className="text-center py-8 text-slate-400">
                                         <div className="text-3xl mb-2">✅</div>
@@ -778,7 +778,7 @@ export default function DriverDashboard() {
                 )}
 
                 {/* Map */}
-                <div className="relative basis-[72%]">
+                <div className="relative w-full lg:basis-[72%] min-h-[45vh] sm:min-h-[50vh] md:min-h-[60vh] lg:h-auto">
                     {routeLoading ? (
                         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 gap-3">
                             <svg className="animate-spin w-10 h-10" viewBox="0 0 24 24" fill="none">
@@ -817,7 +817,7 @@ export default function DriverDashboard() {
 
                     {/* Emergency button */}
                     <button onClick={() => setShowEmergency(true)}
-                        className="absolute bottom-4 left-4 z-10 bg-red-600 hover:bg-red-700 text-white font-bold text-sm px-5 py-3 rounded-2xl shadow-lg flex items-center gap-2 active:scale-95 transition-all"
+                        className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2 active:scale-95 transition-all"
                         style={{ boxShadow: "0 0 0 4px rgba(220,38,38,0.25)" }}>
                         <span>🚨</span> {s.emergency}
                     </button>

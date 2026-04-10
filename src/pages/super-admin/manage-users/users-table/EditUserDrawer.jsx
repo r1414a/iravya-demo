@@ -94,7 +94,7 @@ export default function EditUserDrawer({ open, setOpen, selectedUser, onEditUser
             }
 
             onEditUser(updatedUser)
-            
+
             toast.success("User updated successfully", {
                 description: `${updatedUser.first_name} ${updatedUser.last_name} has been updated.`,
             })
@@ -123,7 +123,7 @@ export default function EditUserDrawer({ open, setOpen, selectedUser, onEditUser
                             {selectedUser.email || selectedUser.phone_number}
                         </SheetDescription>
                     </SheetHeader>
-                    
+
                     <div className="flex-1 overflow-y-auto">
                         <div className="px-4 sm:px-6 pt-4">
                             <div className="flex flex-col sm:flex-row gap-3 p-3 sm:p-4 bg-gray-100 rounded-md sm:items-start">
@@ -218,7 +218,7 @@ export default function EditUserDrawer({ open, setOpen, selectedUser, onEditUser
                                                     {role === "dc_manager" ? "Assigned DC" : "Assigned store"}
                                                 </FieldLabel>
 
-                                                <Select 
+                                                <Select
                                                     value={watch("scope") || ""}
                                                     onValueChange={(val) => setValue("scope", val)}
                                                 >
@@ -247,7 +247,7 @@ export default function EditUserDrawer({ open, setOpen, selectedUser, onEditUser
 
                                         <Field>
                                             <FieldLabel>Status</FieldLabel>
-                                            <Select 
+                                            <Select
                                                 value={watch("user_status") || "active"}
                                                 onValueChange={(val) => setValue("user_status", val)}
                                             >
@@ -296,31 +296,32 @@ export default function EditUserDrawer({ open, setOpen, selectedUser, onEditUser
                                                 </div>
 
                                                 {showResetConfirm && (
-                                                    <div className="mb-2 px-3 py-2.5 bg-blue-50 border border-blue-200 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                                                        <p className="text-xs text-blue-700 wrap-break-words">
-                                                            Send reset link to <span className="font-medium">{selectedUser.email}</span>?
-                                                        </p>
+                                                    <div className="mb-2 px-3 py-2.5 bg-blue-50 border border-blue-200 rounded-lg flex flex-col items-stretch sm:items-center justify-between gap-3">
+    <p className="text-xs text-blue-700 break-words">
+        Send reset link to <span className="font-medium">{selectedUser.email}</span>?
+    </p>
 
-                                                        <div className="flex gap-2 w-full sm:w-auto">
-                                                            <Button 
-                                                                type="button"
-                                                                size="sm" 
-                                                                className="w-1/2 sm:w-auto bg-maroon hover:bg-maroon-dark text-white text-xs h-7"
-                                                                onClick={handleResetPassword}
-                                                            >
-                                                                Send link
-                                                            </Button>
-                                                            <Button
-                                                                type="button"
-                                                                size="sm"
-                                                                variant="outline"
-                                                                className="w-1/2 sm:w-auto text-xs h-7"
-                                                                onClick={() => setShowResetConfirm(false)}
-                                                            >
-                                                                Cancel
-                                                            </Button>
-                                                        </div>
-                                                    </div>
+    <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+        <Button 
+            type="button"
+            size="sm" 
+            className="w-full sm:w-auto bg-maroon hover:bg-maroon-dark text-white text-xs h-7 px-4"
+            onClick={handleResetPassword}
+        >
+            Send link
+        </Button>
+        <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="w-full sm:w-auto text-xs h-7 px-4"
+            onClick={() => setShowResetConfirm(false)}
+        >
+            Cancel
+        </Button>
+    </div>
+</div>
+
                                                 )}
                                             </div>
                                         )}

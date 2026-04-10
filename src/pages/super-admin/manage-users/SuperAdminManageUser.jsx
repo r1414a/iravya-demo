@@ -33,6 +33,18 @@ const initialUsers = [
     },
     {
         id: "3",
+        first_name: "Ravi",
+        last_name: "Kumar",
+        email: null,
+        phone_number: "+91 98201 99999",
+        role: "driver",
+        scope: null,
+        last_login: "2024-04-09T07:30:00.000Z",
+        user_status: "active",
+        createdAt: "2024-02-14T10:00:00.000Z",
+    },
+    {
+        id: "4",
         first_name: "Amit",
         last_name: "Deshmukh",
         email: "amit.d@tatacliq.com",
@@ -44,7 +56,7 @@ const initialUsers = [
         createdAt: "2023-06-10T10:00:00.000Z",
     },
     {
-        id: "4",
+        id: "5",
         first_name: "Sneha",
         last_name: "Patil",
         email: "sneha.p@tanishq.com",
@@ -56,7 +68,7 @@ const initialUsers = [
         createdAt: "2023-09-05T10:00:00.000Z",
     },
     {
-        id: "5",
+        id: "6",
         first_name: "Vikram",
         last_name: "Joshi",
         email: "vikram.j@westside.com",
@@ -68,7 +80,7 @@ const initialUsers = [
         createdAt: "2023-11-12T10:00:00.000Z",
     },
     {
-        id: "6",
+        id: "7",
         first_name: "Anjali",
         last_name: "Mehta",
         email: "anjali.m@zudio.com",
@@ -79,18 +91,7 @@ const initialUsers = [
         user_status: "active",
         createdAt: "2024-01-08T10:00:00.000Z",
     },
-    {
-        id: "7",
-        first_name: "Ravi",
-        last_name: "Kumar",
-        email: null,
-        phone_number: "+91 98201 99999",
-        role: "driver",
-        scope: null,
-        last_login: "2024-04-09T07:30:00.000Z",
-        user_status: "active",
-        createdAt: "2024-02-14T10:00:00.000Z",
-    },
+    
 ]
 
 export default function SuperAdminManageUser() {
