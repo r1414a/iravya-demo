@@ -378,7 +378,7 @@ function DriverMap({ routePoints, fraction, userLocation, stops }) {
     }, [userLocation])
 
 
-    return <div ref={ref} className="w-full h-full min-h-[300px]" />
+    return <div ref={ref} className="w-full h-full" />
 }
 
 export default function DriverDashboard() {
@@ -548,10 +548,9 @@ export default function DriverDashboard() {
     }
 
     // ── DASHBOARD ─────────────────────────────────────────────────────────────
+
     return (
         <>
-
-
             {/* Top bar — unchanged */}
             <div className="bg-maroon text-white px-3 sm:px-4 py-3 flex items-center justify-between shrink-0 shadow-md">
                 <div className="flex items-center gap-3">
@@ -572,255 +571,258 @@ export default function DriverDashboard() {
                 </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row min-h-screen lg:min-h-[93vh] bg-slate-50 overflow-hidden relative">
-
-                {/* Emergency banner */}
-                {emergencySent && (
-                    <div className="bg-red-600 text-white px-4 py-2.5 flex items-center justify-between shrink-0">
-                        <p className="text-sm font-semibold">🚨 {s.emergency_sent}</p>
-                        <a href={`tel:${DEMO_TRIP.dcPhone}`} className="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shrink-0">{s.call_dc}</a>
-                    </div>
-                )}
-
-                {/* Near-store banner — NEW: appears automatically when truck is within range */}
-                {nearStopId && stops.find(s => s.id === nearStopId)?.status === "pending" && (
-                    <div className="bg-green-600 text-white px-4 py-2.5 flex items-center justify-between shrink-0">
-                        <p className="text-sm font-semibold">📍 {s.near_store}</p>
-                        <button onClick={() => confirmStop(nearStopId)} className="text-xs bg-white text-green-700 font-bold px-3 py-1.5 rounded-full shrink-0 active:scale-95">
-                            {s.confirm_stop}
-                        </button>
-                    </div>
-                )}
-
-
-
-                {/* ── Bottom tabbed panel ── */}
-                <div className="bg-white w-full lg:basis-[28%] border-t lg:border-t-0 lg:border-r border-slate-200 shrink-0 flex flex-col max-h-[55vh] lg:max-h-full">
-
-                    {/* Progress bar with milestone dots */}
-                    <div className="px-4 pt-3 pb-2 border-b border-slate-100 shrink-0">
-                        <div className="flex items-center justify-between mb-1.5">
-                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{s.trip_progress}</p>
-                            <p className="text-xs font-bold text-slate-700">{completedCount}/{stops.length} stops · {Math.round(fraction * 100)}%</p>
+            <div className="flex flex-col lg:flex-row h-[calc(100vh-64px)] overflow-hidden">
+                <div className="flex flex-col lg:flex-row flex-1 min-h-0">
+                    {/* Emergency banner */}
+                    {emergencySent && (
+                        <div className="bg-red-600 text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+                            <p className="text-sm font-semibold">🚨 {s.emergency_sent}</p>
+                            <a href={`tel:${DEMO_TRIP.dcPhone}`} className="text-xs bg-white text-red-700 font-bold px-3 py-1.5 rounded-full shrink-0">{s.call_dc}</a>
                         </div>
-                        <div className="relative h-2 bg-slate-100 rounded-full overflow-visible">
-                            <div className="h-full bg-green-500 rounded-full transition-all duration-700" style={{ width: `${Math.round(fraction * 100)}%` }} />
-                            {/* Milestone dots */}
-                            {stops.map(stop => {
-                                const done = stop.status === "completed"
-                                return (
-                                    <div key={stop.id}
-                                        className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-white z-10 transition-all duration-500 ${done ? "bg-green-600" : "bg-slate-300"}`}
-                                        style={{ left: `calc(${stop.milestonePct}% - 7px)` }}
-                                        title={stop.name} />
-                                )
-                            })}
-                        </div>
-                    </div>
+                    )}
 
-                    {/* Tab bar */}
-                    <div className="flex border-b border-slate-100 shrink-0">
-                        {[{ id: "stats", label: s.tab_stats }, { id: "stops", label: s.tab_stops }, { id: "alerts", label: s.tab_alerts, badge: unreadCount }].map(tab => (
-                            <button key={tab.id} onClick={() => handleTabChange(tab.id)}
-                                className={`flex-1 py-2.5 text-xs font-semibold relative transition-colors ${activeTab === tab.id ? "text-maroon border-b-2 border-maroon" : "text-slate-500 hover:text-slate-700"}`}>
-                                {tab.label}
-                                {tab.badge > 0 && (
-                                    <span className="absolute top-1.5 right-[22%] w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
-                                        {tab.badge}
-                                    </span>
-                                )}
+                    {/* Near-store banner — NEW: appears automatically when truck is within range */}
+                    {nearStopId && stops.find(s => s.id === nearStopId)?.status === "pending" && (
+                        <div className="bg-green-600 text-white px-4 py-2.5 flex items-center justify-between shrink-0">
+                            <p className="text-sm font-semibold">📍 {s.near_store}</p>
+                            <button onClick={() => confirmStop(nearStopId)} className="text-xs bg-white text-green-700 font-bold px-3 py-1.5 rounded-full shrink-0 active:scale-95">
+                                {s.confirm_stop}
                             </button>
-                        ))}
-                    </div>
+                        </div>
+                    )}
 
-                    {/* Tab content */}
-                    <div className="flex-1 overflow-y-auto">
 
-                        {/* STATS TAB */}
-                        {activeTab === "stats" && (
-                            <div className="px-4 py-3">
-                                <div className="grid grid-cols-3 gap-2 mb-3">
-                                    {[
-                                        { label: s.speed, value: simSpeed, unit: s.km_h, red: simSpeed > 80 },
-                                        { label: s.eta, value: etaStr, unit: "" },
-                                        { label: s.distance, value: distRem, unit: s.km },
-                                    ].map(({ label, value, unit, red }) => (
-                                        <div key={label} className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-center">
-                                            <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">{label}</p>
-                                            <p className={`text-base font-bold tabular-nums ${red ? "text-red-600" : "text-slate-900"}`}>{value}</p>
-                                            {unit && <p className="text-[10px] text-slate-400">{unit}</p>}
-                                        </div>
-                                    ))}
-                                </div>
-                                <div>
-                                    {[
-                                        { label: "Trip ID", value: DEMO_TRIP.id },
-                                        { label: "Truck", value: DEMO_TRIP.truck },
-                                        { label: "From", value: DEMO_TRIP.sourceDC },
-                                        { label: "Departed", value: DEMO_TRIP.departedAt },
-                                        { label: "ETA final", value: DEMO_TRIP.etaFinal },
-                                    ].map(({ label, value }) => (
-                                        <div key={label} className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs last:border-0">
-                                            <span className="text-slate-500">{label}</span>
-                                            <span className="font-medium text-slate-800 font-mono">{value}</span>
-                                        </div>
-                                    ))}
-                                </div>
+
+                    {/* ── Bottom tabbed panel ── */}
+                    <div className="bg-white w-full lg:basis-[28%] border-t lg:border-t-0 lg:border-r border-slate-200 shrink-0 flex flex-col max-h-[55vh] lg:max-h-full">
+
+                        {/* Progress bar with milestone dots */}
+                        <div className="px-4 pt-3 pb-2 border-b border-slate-100 shrink-0">
+                            <div className="flex items-center justify-between mb-1.5">
+                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{s.trip_progress}</p>
+                                <p className="text-xs font-bold text-slate-700">{completedCount}/{stops.length} stops · {Math.round(fraction * 100)}%</p>
                             </div>
-                        )}
-
-                        {/* STOPS TAB */}
-                        {activeTab === "stops" && (
-                            <div className="px-3 sm:px-4 py-3 flex flex-col gap-3">
-                                {completedCount === stops.length ? (
-                                    <div className="text-center py-8">
-                                        <div className="text-4xl mb-3">🎉</div>
-                                        <p className="font-bold text-green-700 text-sm">{s.all_done}</p>
-                                    </div>
-                                ) : stops.map((stop, i) => {
-                                    const isNear = nearStopId === stop.id && stop.status === "pending"
+                            <div className="relative h-2 bg-slate-100 rounded-full overflow-visible">
+                                <div className="h-full bg-green-500 rounded-full transition-all duration-700" style={{ width: `${Math.round(fraction * 100)}%` }} />
+                                {/* Milestone dots */}
+                                {stops.map(stop => {
+                                    const done = stop.status === "completed"
                                     return (
-                                        <div key={stop.id} className={`rounded-xl border p-3 transition-all ${stop.status === "completed" ? "bg-green-50 border-green-200" : isNear ? "bg-blue-50 border-blue-400" : "bg-white border-slate-200"}`}>
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div className="flex items-start gap-2.5 flex-1 min-w-0">
-                                                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${stop.status === "completed" ? "bg-green-500 text-white" : isNear ? "bg-blue-500 text-white" : "bg-slate-200 text-slate-600"}`}>
-                                                        {stop.status === "completed" ? "✓" : i + 1}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <p className="font-semibold text-sm text-slate-900 truncate">{stop.name}</p>
-                                                        <p className="text-xs text-slate-500 truncate">{stop.address}</p>
-                                                        {isNear && <p className="text-xs text-blue-600 font-medium mt-0.5">You're nearby — tap to confirm</p>}
-                                                    </div>
-                                                </div>
-                                                <div className="flex gap-2 shrink-0">
-                                                    {stop.status !== "completed" && (
-                                                        <button onClick={() => openNavigation(stop.lat, stop.lng)}
-                                                            className="text-xs px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-medium hover:bg-blue-100">{s.navigate}</button>
-                                                    )}
-                                                    {stop.status === "completed" ? (
-                                                        <span className="text-xs px-2.5 py-1.5 rounded-lg bg-green-100 text-green-700 font-medium">{s.confirmed}</span>
-                                                    ) : (
-                                                        <button onClick={() => confirmStop(stop.id)}
-                                                            className={`text-xs px-2.5 py-1.5 rounded-lg text-white font-medium active:scale-95 transition-all ${isNear ? "bg-blue-600 hover:bg-blue-700" : "bg-maroon hover:bg-maroon-dark"}`}>
-                                                            {s.confirm_stop}
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <div key={stop.id}
+                                            className={`absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full border-2 border-white z-10 transition-all duration-500 ${done ? "bg-green-600" : "bg-slate-300"}`}
+                                            style={{ left: `calc(${stop.milestonePct}% - 7px)` }}
+                                            title={stop.name} />
                                     )
                                 })}
                             </div>
-                        )}
+                        </div>
 
-                        {/* ALERTS TAB */}
-                        {activeTab === "alerts" && (
-                            <div className="px-3 sm:px-4 py-3">
-                                {driverAlerts.length === 0 ? (
-                                    <div className="text-center py-8 text-slate-400">
-                                        <div className="text-3xl mb-2">✅</div>
-                                        <p className="text-sm">{s.no_alerts}</p>
+                        {/* Tab bar */}
+                        <div className="flex border-b border-slate-100 shrink-0">
+                            {[{ id: "stats", label: s.tab_stats }, { id: "stops", label: s.tab_stops }, { id: "alerts", label: s.tab_alerts, badge: unreadCount }].map(tab => (
+                                <button key={tab.id} onClick={() => handleTabChange(tab.id)}
+                                    className={`flex-1 py-2.5 text-xs font-semibold relative transition-colors ${activeTab === tab.id ? "text-maroon border-b-2 border-maroon" : "text-slate-500 hover:text-slate-700"}`}>
+                                    {tab.label}
+                                    {tab.badge > 0 && (
+                                        <span className="absolute top-1.5 right-[22%] w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">
+                                            {tab.badge}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Tab content */}
+                        <div className="flex-1">
+
+                            {/* STATS TAB */}
+                            {activeTab === "stats" && (
+                                <div className="px-4 py-3">
+                                    <div className="grid grid-cols-3 gap-2 mb-3">
+                                        {[
+                                            { label: s.speed, value: simSpeed, unit: s.km_h, red: simSpeed > 80 },
+                                            { label: s.eta, value: etaStr, unit: "" },
+                                            { label: s.distance, value: distRem, unit: s.km },
+                                        ].map(({ label, value, unit, red }) => (
+                                            <div key={label} className="bg-slate-50 border border-slate-100 rounded-xl p-3 text-center">
+                                                <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1">{label}</p>
+                                                <p className={`text-base font-bold tabular-nums ${red ? "text-red-600" : "text-slate-900"}`}>{value}</p>
+                                                {unit && <p className="text-[10px] text-slate-400">{unit}</p>}
+                                            </div>
+                                        ))}
                                     </div>
-                                ) : (
-                                    <div className="flex flex-col gap-2">
-                                        {driverAlerts.map(alert => {
-                                            const st = ALERT_STYLE[alert.severity] || ALERT_STYLE.info
-                                            return (
-                                                <div key={alert.id} className={`rounded-xl border px-3 py-2.5 ${st.bg} ${st.border}`}>
-                                                    <div className="flex items-start gap-2.5">
-                                                        <span className="text-base shrink-0 mt-0.5">{st.icon}</span>
-                                                        <div className="flex-1 min-w-0">
-                                                            <div className="flex items-center justify-between gap-2">
-                                                                <p className={`text-xs font-semibold uppercase tracking-wide ${st.text}`}>{alert.type}</p>
-                                                                <span className={`text-[10px] ${st.text} opacity-70`}>{alert.time}</span>
-                                                            </div>
-                                                            <p className={`text-xs mt-0.5 leading-relaxed ${st.text}`}>{alert.message}</p>
+                                    <div>
+                                        {[
+                                            { label: "Trip ID", value: DEMO_TRIP.id },
+                                            { label: "Truck", value: DEMO_TRIP.truck },
+                                            { label: "From", value: DEMO_TRIP.sourceDC },
+                                            { label: "Departed", value: DEMO_TRIP.departedAt },
+                                            { label: "ETA final", value: DEMO_TRIP.etaFinal },
+                                        ].map(({ label, value }) => (
+                                            <div key={label} className="flex justify-between items-center py-1.5 border-b border-slate-100 text-xs last:border-0">
+                                                <span className="text-slate-500">{label}</span>
+                                                <span className="font-medium text-slate-800 font-mono">{value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* STOPS TAB */}
+                            {activeTab === "stops" && (
+                                <div className="px-3 sm:px-4 py-3 flex flex-col gap-3">
+                                    {completedCount === stops.length ? (
+                                        <div className="text-center py-8">
+                                            <div className="text-4xl mb-3">🎉</div>
+                                            <p className="font-bold text-green-700 text-sm">{s.all_done}</p>
+                                        </div>
+                                    ) : stops.map((stop, i) => {
+                                        const isNear = nearStopId === stop.id && stop.status === "pending"
+                                        return (
+                                            <div key={stop.id} className={`rounded-xl border p-3 transition-all ${stop.status === "completed" ? "bg-green-50 border-green-200" : isNear ? "bg-blue-50 border-blue-400" : "bg-white border-slate-200"}`}>
+                                                <div className="flex items-start justify-between gap-3">
+                                                    <div className="flex items-start gap-2.5 flex-1 min-w-0">
+                                                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 ${stop.status === "completed" ? "bg-green-500 text-white" : isNear ? "bg-blue-500 text-white" : "bg-slate-200 text-slate-600"}`}>
+                                                            {stop.status === "completed" ? "✓" : i + 1}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="font-semibold text-sm text-slate-900 truncate">{stop.name}</p>
+                                                            <p className="text-xs text-slate-500 truncate">{stop.address}</p>
+                                                            {isNear && <p className="text-xs text-blue-600 font-medium mt-0.5">You're nearby — tap to confirm</p>}
                                                         </div>
                                                     </div>
+                                                    <div className="flex gap-2 shrink-0">
+                                                        {stop.status !== "completed" && (
+                                                            <button onClick={() => openNavigation(stop.lat, stop.lng)}
+                                                                className="text-xs px-2.5 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-medium hover:bg-blue-100">{s.navigate}</button>
+                                                        )}
+                                                        {stop.status === "completed" ? (
+                                                            <span className="text-xs px-2.5 py-1.5 rounded-lg bg-green-100 text-green-700 font-medium">{s.confirmed}</span>
+                                                        ) : (
+                                                            <button onClick={() => confirmStop(stop.id)}
+                                                                className={`text-xs px-2.5 py-1.5 rounded-lg text-white font-medium active:scale-95 transition-all ${isNear ? "bg-blue-600 hover:bg-blue-700" : "bg-maroon hover:bg-maroon-dark"}`}>
+                                                                {s.confirm_stop}
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            )
-                                        })}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )}
 
-                {/* Emergency modal — unchanged */}
-                {showEmergency && (
-                    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setShowEmergency(false)}>
-                        <div className="w-full max-w-sm bg-white rounded-t-3xl p-6 pb-8" onClick={e => e.stopPropagation()}>
-                            <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4 text-3xl">🚨</div>
-                            <h2 className="text-xl font-bold text-center text-slate-900 mb-2">{s.emergency_q}</h2>
-                            <p className="text-sm text-slate-500 text-center mb-6">{s.emergency_hint}</p>
-                            <div className="flex flex-col gap-3">
-                                <button onClick={handleEmergency} className="w-full py-3.5 rounded-xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 active:scale-95">{s.emergency_yes}</button>
-                                <button onClick={() => setShowEmergency(false)} className="w-full py-3 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50">{s.emergency_cancel}</button>
-                            </div>
+                            {/* ALERTS TAB */}
+                            {activeTab === "alerts" && (
+                                <div className="px-3 sm:px-4 py-3">
+                                    {driverAlerts.length === 0 ? (
+                                        <div className="text-center py-8 text-slate-400">
+                                            <div className="text-3xl mb-2">✅</div>
+                                            <p className="text-sm">{s.no_alerts}</p>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col gap-2">
+                                            {driverAlerts.map(alert => {
+                                                const st = ALERT_STYLE[alert.severity] || ALERT_STYLE.info
+                                                return (
+                                                    <div key={alert.id} className={`rounded-xl border px-3 py-2.5 ${st.bg} ${st.border}`}>
+                                                        <div className="flex items-start gap-2.5">
+                                                            <span className="text-base shrink-0 mt-0.5">{st.icon}</span>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-center justify-between gap-2">
+                                                                    <p className={`text-xs font-semibold uppercase tracking-wide ${st.text}`}>{alert.type}</p>
+                                                                    <span className={`text-[10px] ${st.text} opacity-70`}>{alert.time}</span>
+                                                                </div>
+                                                                <p className={`text-xs mt-0.5 leading-relaxed ${st.text}`}>{alert.message}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
-                )}
 
-                {/* Logout modal — unchanged */}
-                {showLogout && (
-                    <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setShowLogout(false)}>
-                        <div className="w-full max-w-sm bg-white rounded-t-3xl p-6 pb-8" onClick={e => e.stopPropagation()}>
-                            <h2 className="text-lg font-bold text-slate-900 mb-2 text-center">{s.logout}</h2>
-                            <p className="text-sm text-slate-500 text-center mb-6">{s.logout_q}</p>
-                            <div className="flex flex-col gap-3">
-                                <button onClick={() => { setScreen("otp"); setOtpSent(false); setOtp(""); setPhone(""); setShowLogout(false); setDriverAlerts([]) }}
-                                    className="w-full py-3 rounded-xl bg-maroon text-white font-bold text-sm">{s.logout_yes}</button>
-                                <button onClick={() => setShowLogout(false)} className="w-full py-3 rounded-xl border border-slate-200 text-slate-600 text-sm">{s.logout_cancel}</button>
+                    {/* Emergency modal — unchanged */}
+                    {showEmergency && (
+                        <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setShowEmergency(false)}>
+                            <div className="w-full max-w-sm bg-white rounded-t-3xl p-6 pb-8" onClick={e => e.stopPropagation()}>
+                                <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4 text-3xl">🚨</div>
+                                <h2 className="text-xl font-bold text-center text-slate-900 mb-2">{s.emergency_q}</h2>
+                                <p className="text-sm text-slate-500 text-center mb-6">{s.emergency_hint}</p>
+                                <div className="flex flex-col gap-3">
+                                    <button onClick={handleEmergency} className="w-full py-3.5 rounded-xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 active:scale-95">{s.emergency_yes}</button>
+                                    <button onClick={() => setShowEmergency(false)} className="w-full py-3 rounded-xl border border-slate-200 text-slate-600 text-sm font-medium hover:bg-slate-50">{s.emergency_cancel}</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
-
-                {/* Map */}
-                <div className="relative w-full lg:basis-[72%] min-h-[45vh] sm:min-h-[50vh] md:min-h-[60vh] lg:h-auto">
-                    {routeLoading ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 gap-3">
-                            <svg className="animate-spin w-10 h-10" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="#cbd5e1" strokeWidth="3" />
-                                <path d="M12 2a10 10 0 0 1 10 10" stroke="#701a40" strokeWidth="3" strokeLinecap="round" />
-                            </svg>
-                            <p className="text-sm text-slate-500">{s.route_loading}</p>
-                        </div>
-                    ) : (
-                        <DriverMap routePoints={routePoints} fraction={fraction} userLocation={userLocation} stops={stops} />
                     )}
 
-                    {/* GPS pill */}
-                    <div className={`absolute top-3 left-3 z-10 px-2.5 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-1.5 ${gpsStatus === "ok" ? "bg-green-100 text-green-700" : gpsStatus === "loading" ? "bg-blue-100 text-blue-600" : gpsStatus === "error" ? "bg-red-100 text-red-600" : "bg-slate-100 text-slate-500"}`}>
-                        <span className={`w-2 h-2 rounded-full ${gpsStatus === "ok" ? "bg-green-500" : gpsStatus === "loading" ? "bg-blue-400" : gpsStatus === "error" ? "bg-red-400" : "bg-slate-300"}`} />
-                        {gpsStatus === "ok" ? s.your_location : gpsStatus === "loading" ? s.gps_loading : gpsStatus === "error" ? s.gps_error : "GPS"}
-                    </div>
-
-                    {/* Speed indicator — NEW */}
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 bg-white rounded-xl border border-slate-200 shadow-md px-3 py-1.5 flex items-center gap-2 min-w-[72px] justify-center">
-                        <span className={`text-xl font-bold tabular-nums ${simSpeed > 80 ? "text-red-600" : "text-slate-800"}`}>{simSpeed}</span>
-                        <div>
-                            <p className="text-[10px] text-slate-400 leading-none">{s.km_h}</p>
-                            {simSpeed > 80 && <p className="text-[9px] font-bold text-red-600 leading-none mt-0.5">FAST</p>}
+                    {/* Logout modal — unchanged */}
+                    {showLogout && (
+                        <div className="fixed inset-0 z-50 flex items-end justify-center" style={{ background: "rgba(0,0,0,0.6)" }} onClick={() => setShowLogout(false)}>
+                            <div className="w-full max-w-sm bg-white rounded-t-3xl p-6 pb-8" onClick={e => e.stopPropagation()}>
+                                <h2 className="text-lg font-bold text-slate-900 mb-2 text-center">{s.logout}</h2>
+                                <p className="text-sm text-slate-500 text-center mb-6">{s.logout_q}</p>
+                                <div className="flex flex-col gap-3">
+                                    <button onClick={() => { setScreen("otp"); setOtpSent(false); setOtp(""); setPhone(""); setShowLogout(false); setDriverAlerts([]) }}
+                                        className="w-full py-3 rounded-xl bg-maroon text-white font-bold text-sm">{s.logout_yes}</button>
+                                    <button onClick={() => setShowLogout(false)} className="w-full py-3 rounded-xl border border-slate-200 text-slate-600 text-sm">{s.logout_cancel}</button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Map legend */}
-                    <div className="absolute top-12 left-3 z-10 bg-white rounded-xl border border-slate-200 shadow-sm px-3 py-2 text-xs space-y-1">
-                        <div className="flex items-center gap-1.5"><span className="w-5 h-1.5 bg-green-600 rounded-full inline-block" />Covered</div>
-                        <div className="flex items-center gap-1.5"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke="#2563eb" strokeWidth="2.5" strokeDasharray="5 3" /></svg>Remaining</div>
-                        <div className="flex items-center gap-1.5"><span className="text-sm">🏭</span>Warehouse</div>
-                        <div className="flex items-center gap-1.5"><span className="text-sm">🏪</span>Store</div>
-                        <div className="flex items-center gap-1.5"><span className="text-sm">🔵</span>You</div>
-                    </div>
+                    {/* Map */}
+                    <div className="flex-1 min-h-0 relative overflow-hidden">
+                        <div className="absolute inset-0">
+                        {routeLoading ? (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-100 gap-3">
+                                <svg className="animate-spin w-10 h-10" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="#cbd5e1" strokeWidth="3" />
+                                    <path d="M12 2a10 10 0 0 1 10 10" stroke="#701a40" strokeWidth="3" strokeLinecap="round" />
+                                </svg>
+                                <p className="text-sm text-slate-500">{s.route_loading}</p>
+                            </div>
+                        ) : (
+                            <DriverMap routePoints={routePoints} fraction={fraction} userLocation={userLocation} stops={stops} />
+                        )}
 
-                    {/* Emergency button */}
-                    <button onClick={() => setShowEmergency(true)}
-                        className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2 active:scale-95 transition-all"
-                        style={{ boxShadow: "0 0 0 4px rgba(220,38,38,0.25)" }}>
-                        <span>🚨</span> {s.emergency}
-                    </button>
+                        {/* GPS pill */}
+                        <div className={`absolute top-3 left-3 z-10 px-2.5 py-1.5 rounded-full text-xs font-medium shadow-sm flex items-center gap-1.5 ${gpsStatus === "ok" ? "bg-green-100 text-green-700" : gpsStatus === "loading" ? "bg-blue-100 text-blue-600" : gpsStatus === "error" ? "bg-red-100 text-red-600" : "bg-slate-100 text-slate-500"}`}>
+                            <span className={`w-2 h-2 rounded-full ${gpsStatus === "ok" ? "bg-green-500" : gpsStatus === "loading" ? "bg-blue-400" : gpsStatus === "error" ? "bg-red-400" : "bg-slate-300"}`} />
+                            {gpsStatus === "ok" ? s.your_location : gpsStatus === "loading" ? s.gps_loading : gpsStatus === "error" ? s.gps_error : "GPS"}
+                        </div>
+
+                        {/* Speed indicator — NEW */}
+                        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 bg-white rounded-xl border border-slate-200 shadow-md px-3 py-1.5 flex items-center gap-2 min-w-[72px] justify-center">
+                            <span className={`text-xl font-bold tabular-nums ${simSpeed > 80 ? "text-red-600" : "text-slate-800"}`}>{simSpeed}</span>
+                            <div>
+                                <p className="text-[10px] text-slate-400 leading-none">{s.km_h}</p>
+                                {simSpeed > 80 && <p className="text-[9px] font-bold text-red-600 leading-none mt-0.5">FAST</p>}
+                            </div>
+                        </div>
+
+                        {/* Map legend */}
+                        <div className="absolute top-12 left-3 z-10 bg-white rounded-xl border border-slate-200 shadow-sm px-3 py-2 text-xs space-y-1">
+                            <div className="flex items-center gap-1.5"><span className="w-5 h-1.5 bg-green-600 rounded-full inline-block" />Covered</div>
+                            <div className="flex items-center gap-1.5"><svg width="20" height="6"><line x1="0" y1="3" x2="20" y2="3" stroke="#2563eb" strokeWidth="2.5" strokeDasharray="5 3" /></svg>Remaining</div>
+                            <div className="flex items-center gap-1.5"><span className="text-sm">🏭</span>Warehouse</div>
+                            <div className="flex items-center gap-1.5"><span className="text-sm">🏪</span>Store</div>
+                            <div className="flex items-center gap-1.5"><span className="text-sm">🔵</span>You</div>
+                        </div>
+
+                        {/* Emergency button */}
+                        <button onClick={() => setShowEmergency(true)}
+                            className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 bg-red-600 hover:bg-red-700 text-white font-bold text-xs px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2 active:scale-95 transition-all"
+                            style={{ boxShadow: "0 0 0 4px rgba(220,38,38,0.25)" }}>
+                            <span>🚨</span> {s.emergency}
+                        </button>
+                    </div>
+                    </div>
                 </div>
             </div>
         </>

@@ -276,7 +276,7 @@ useEffect(() => {
   return  (
   <div
     ref={containerRef}
-    className="w-full h-full min-h-[300px]"
+    className="w-full h-full"
   />
 )
 }
@@ -342,7 +342,7 @@ export default function TrackingForm({ MOCK_TRIPS }) {
    <div className="flex flex-col lg:flex-row bg-slate-50 min-h-screen lg:h-[calc(100vh-80px)]">
 
       {/* ── LEFT SIDEBAR — white, matches your manage pages ── */}
-      <div className="w-full lg:w-125 shrink-0 flex flex-col bg-white border-t lg:border-r border-slate-200 overflow-y-auto max-h-[60vh] lg:max-h-full">
+     <div className="order-2 lg:order-1 w-full lg:w-125 shrink-0 flex flex-col bg-white border-t lg:border-r border-slate-200 overflow-y-auto max-h-[55vh] lg:max-h-full">
 
         {/* Sticky search strip */}
         <div className="px-5 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
@@ -629,7 +629,7 @@ export default function TrackingForm({ MOCK_TRIPS }) {
       </div>
 
       {/* ── RIGHT — full height Mapbox map ── */}
-      <div className="flex-1 relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-full">
+      <div className="order-1 lg:order-2 w-full h-[45vh] sm:h-[50vh] md:h-[60vh] lg:flex-1 lg:h-auto relative overflow-hidden">
 
         {/* Map legend — bottom right */}
         {tripData && !routeLoading && (
