@@ -97,18 +97,28 @@ export default function EditUserDrawer({ open, setOpen, selectedUser, onEditUser
 
             toast.success("User updated successfully", {
                 description: `${updatedUser.first_name} ${updatedUser.last_name} has been updated.`,
+                style: {
+                    color: "green"
+                }
             })
 
             setOpen(false)
         } catch (err) {
             console.error(err)
-            toast.error("Failed to update user")
+            toast.error("Failed to update user", {
+                style: {
+                    color: 'red'
+                }
+            })
         }
     }
 
     const handleResetPassword = () => {
         toast.success("Password reset link sent", {
             description: `Reset link sent to ${selectedUser.email}`,
+            style: {
+                    color: "green"
+                }
         })
         setShowResetConfirm(false)
     }

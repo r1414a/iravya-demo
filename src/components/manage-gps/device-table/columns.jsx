@@ -95,6 +95,9 @@ function DeviceActionsCell({ row, onEditDevice, onDeleteDevice }) {
         await onDeleteDevice(device.id)
         toast.success("Device deleted successfully", {
             description: `${device.deviceId} has been removed.`,
+            style: {
+                    color: "green"
+                }
         })
     }
 
@@ -157,7 +160,7 @@ function DeviceActionsCell({ row, onEditDevice, onDeleteDevice }) {
 }
 
 // getColumns receives options so the same file serves both DC and super admin
-export function getColumns({ showBrandColumn = false, onDelete, onEdit } = {}) {
+export function getColumns({ showBrandColumn = false, onEditDevice, onDeleteDevice } = {}) {
     const cols = [
         // Device ID + IMEI + firmware
         {
@@ -305,8 +308,8 @@ export function getColumns({ showBrandColumn = false, onDelete, onEdit } = {}) {
             cell: ({ row }) => (
                 <DeviceActionsCell
                     row={row}
-                    onEditDevice={onEdit}
-                    onDeleteDevice={onDelete}
+                    onEditDevice={onEditDevice}
+                    onDeleteDevice={onDeleteDevice}
                 />
             ),
         }

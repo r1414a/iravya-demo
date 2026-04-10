@@ -255,13 +255,13 @@ export default function Analytics() {
                     >
                         Trip volume
                     </SectionTitle>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
                         {/* Stacked bar — trip volume */}
                         <ChartCard
                             title="Trips by status"
                             subtitle={`${tripRange} breakdown`}
-                            className="lg:col-span-2"
+                            // className="lg:col-span-2"
                         >
                             <ResponsiveContainer width="100%" height={240}>
                                 <BarChart data={tripData} barSize={tripRange === "Weekly" ? 28 : 20}>
@@ -318,38 +318,13 @@ export default function Analytics() {
 
                 {/* ── Brand breakdown + DC activity ────────────────────────── */}
                 <section>
-                    <SectionTitle>Brands & distribution centers</SectionTitle>
+                    <SectionTitle>Distribution centers & alerts</SectionTitle>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-                        {/* Brand bar chart */}
-                        {/* <ChartCard title="Trips by brand" subtitle="All time total">
-                            <ResponsiveContainer width="100%" height={220}>
-                                <BarChart data={BRAND_TRIPS} layout="vertical" barSize={18}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-                                    <XAxis type="number" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                                    <YAxis dataKey="brand" type="category" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} width={80} />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Bar dataKey="trips" name="Trips" fill={C.maroon} radius={[0,4,4,0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-
-                            // Brand mini-stats below chart 
-                            <div className="grid grid-cols-2 gap-2 mt-4">
-                                {BRAND_TRIPS.map(b => (
-                                    <div key={b.brand} className="bg-slate-50 border border-slate-100 rounded-xl p-3">
-                                        <p className="text-xs font-semibold text-slate-700 truncate">{b.brand}</p>
-                                        <p className="text-lg font-bold text-slate-900 mt-0.5">{b.trips}</p>
-                                        <div className="flex gap-3 mt-1">
-                                            <p className="text-[10px] text-slate-400">{b.dcs} DC{b.dcs > 1 ? "s" : ""}</p>
-                                            <p className="text-[10px] text-slate-400">{b.stores} stores</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </ChartCard> */}
-
-                        {/* DC dispatched vs completed */}
-                        <ChartCard title="DC dispatch performance" subtitle="Trips dispatched vs completed per DC">
+                         {/* DC dispatched vs completed */}
+                        <ChartCard title="DC dispatch performance" subtitle="Trips dispatched vs completed per DC" 
+                        // className="lg:col-span-2"
+                        >
                             <ResponsiveContainer width="100%" height={220}>
                                 <BarChart data={DC_ACTIVITY} barGap={2} barSize={14}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -378,73 +353,6 @@ export default function Analytics() {
                                 })}
                             </div>
                         </ChartCard>
-                    </div>
-                </section>
-
-                {/* ── Fleet + Alerts ───────────────────────────────────────── */}
-                <section>
-                    <SectionTitle>Fleet health & alerts</SectionTitle>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-
-                        {/* Fleet status donut */}
-                        {/* <ChartCard title="Truck status" subtitle="Current fleet state">
-                            <ResponsiveContainer width="100%" height={180}>
-                                <PieChart>
-                                    <Pie
-                                        data={FLEET_STATUS}
-                                        cx="50%" cy="50%"
-                                        innerRadius={52} outerRadius={76}
-                                        paddingAngle={3} dataKey="value"
-                                    >
-                                        {FLEET_STATUS.map((entry, i) => (
-                                            <Cell key={i} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip content={<CustomTooltip />} />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div className="flex flex-col gap-2 mt-1">
-                                {FLEET_STATUS.map(f => (
-                                    <div key={f.name} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2.5 h-2.5 rounded-full" style={{ background: f.color }} />
-                                            <span className="text-xs text-slate-600">{f.name}</span>
-                                        </div>
-                                        <span className="text-xs font-bold text-slate-800">{f.value}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </ChartCard> */}
-
-                        {/* GPS device status donut */}
-                        {/* <ChartCard title="GPS device status" subtitle="Real-time device health">
-                            <ResponsiveContainer width="100%" height={180}>
-                                <PieChart>
-                                    <Pie
-                                        data={GPS_HEALTH}
-                                        cx="50%" cy="50%"
-                                        innerRadius={52} outerRadius={76}
-                                        paddingAngle={3} dataKey="value"
-                                    >
-                                        {GPS_HEALTH.map((entry, i) => (
-                                            <Cell key={i} fill={entry.color} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip content={<CustomTooltip />} />
-                                </PieChart>
-                            </ResponsiveContainer>
-                            <div className="flex flex-col gap-2 mt-1">
-                                {GPS_HEALTH.map(g => (
-                                    <div key={g.name} className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-2.5 h-2.5 rounded-full" style={{ background: g.color }} />
-                                            <span className="text-xs text-slate-600">{g.name}</span>
-                                        </div>
-                                        <span className="text-xs font-bold text-slate-800">{g.value}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </ChartCard> */}
 
                         {/* Alert type breakdown */}
                         <ChartCard title="Alert breakdown" subtitle="By type — last 30 days">
@@ -475,99 +383,16 @@ export default function Analytics() {
                                 </p>
                             </div>
                         </ChartCard>
+
+                       
                     </div>
                 </section>
+
 
                 {/* ── Driver performance + Top stores ──────────────────────── */}
                 <section>
                     <SectionTitle>Drivers & stores</SectionTitle>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-                        {/* Driver leaderboard */}
-                        {/* <ChartCard title="Driver performance" subtitle="Top 5 drivers this month">
-                            
-                            <div className="grid grid-cols-5 text-[10px] font-semibold uppercase tracking-wider text-slate-400 pb-2 border-b border-slate-100 mb-2">
-                                <span className="col-span-2">Driver</span>
-                                <span className="text-center">Trips</span>
-                                <span className="text-center">On-time</span>
-                                <span className="text-center">Alerts</span>
-                            </div>
-                            <div className="flex flex-col divide-y divide-slate-100">
-                                {DRIVER_PERFORMANCE.map((d, i) => {
-                                    const onTimePct = Math.round((d.onTime / d.trips) * 100)
-                                    return (
-                                        <div key={d.name} className="grid grid-cols-5 items-center py-2.5">
-                                            
-                                            <div className="col-span-2 flex items-center gap-2.5">
-                                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                                                    i === 0 ? "bg-amber-100 text-amber-700"
-                                                  : i === 1 ? "bg-slate-100 text-slate-600"
-                                                  : "bg-slate-50 text-slate-500"
-                                                }`}>
-                                                    {i + 1}
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <p className="text-xs font-medium text-slate-800 truncate">{d.name.split(" ")[0]}</p>
-                                                    <div className="flex items-center gap-0.5">
-                                                        {[1,2,3,4,5].map(s => (
-                                                            <span key={s} className={`text-[9px] ${s <= Math.floor(d.rating) ? "text-amber-400" : "text-slate-200"}`}>★</span>
-                                                        ))}
-                                                        <span className="text-[9px] text-slate-400 ml-0.5">{d.rating}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                             Trips 
-                                            <p className="text-sm font-bold text-slate-800 text-center">{d.trips}</p>
-                                             On-time % 
-                                            <div className="text-center">
-                                                <span className={`text-xs font-semibold ${
-                                                    onTimePct >= 95 ? "text-green-600"
-                                                  : onTimePct >= 90 ? "text-amber-600"
-                                                  : "text-red-600"
-                                                }`}>
-                                                    {onTimePct}%
-                                                </span>
-                                            </div>
-                                             Alerts 
-                                            <div className="text-center">
-                                                <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${
-                                                    d.alerts === 0 ? "bg-green-100 text-green-700"
-                                                  : d.alerts <= 3  ? "bg-amber-100 text-amber-700"
-                                                  : "bg-red-100 text-red-700"
-                                                }`}>
-                                                    {d.alerts}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-
-                            Radial chart for on-time delivery
-                            <div className="mt-3 pt-3 border-t border-slate-100">
-                                <p className="text-xs text-slate-500 mb-2">On-time delivery rate by driver</p>
-                                <ResponsiveContainer width="100%" height={110}>
-                                    <RadialBarChart
-                                        cx="50%" cy="60%"
-                                        innerRadius="20%" outerRadius="90%"
-                                        data={DRIVER_PERFORMANCE.map((d, i) => ({
-                                            name:  d.name.split(" ")[0],
-                                            value: Math.round((d.onTime / d.trips) * 100),
-                                            fill:  [C.green, C.sky, C.violet, C.amber, C.teal][i],
-                                        }))}
-                                        startAngle={180} endAngle={0}
-                                    >
-                                        <RadialBar dataKey="value" cornerRadius={4} />
-                                        <Tooltip content={<CustomTooltip />} />
-                                        <Legend
-                                            iconSize={8}
-                                            wrapperStyle={{ fontSize: 10, paddingTop: 4 }}
-                                            formatter={(value) => value}
-                                        />
-                                    </RadialBarChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </ChartCard> */}
 
                         {/* Top stores + store delivery bar */}
                         <ChartCard title="Top stores by deliveries" subtitle="Most deliveries received — all time">
@@ -587,7 +412,7 @@ export default function Analytics() {
                             </ResponsiveContainer>
 
                             {/* Store cards */}
-                            <div className="mt-4 pt-3 border-t border-slate-100">
+                            {/* <div className="mt-4 pt-3 border-t border-slate-100">
                                 <p className="text-xs text-slate-500 mb-2">Brand distribution</p>
                                 <div className="flex flex-wrap gap-1.5">
                                     {[...new Set(TOP_STORES.map(s => s.brand))].map(brand => {
@@ -602,7 +427,7 @@ export default function Analytics() {
                                         )
                                     })}
                                 </div>
-                            </div>
+                            </div> */}
                         </ChartCard>
                     </div>
                 </section>

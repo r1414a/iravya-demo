@@ -66,12 +66,20 @@ export default function CreateUserModal({ onAddUser }) {
     async function handleCreateUser(data) {
         try {
             if (!data.f_name || !data.l_name || !data.email || !data.role) {
-                toast.error("Please fill in all required fields")
+                toast.error("Please fill in all required fields", {
+                    style: {
+                        color: 'red'
+                    }
+                })
                 return
             }
 
             if ((data.role === "dc_manager" || data.role === "store_manager") && !data.scope) {
-                toast.error("Please select a scope")
+                toast.error("Please select a scope", {
+                    style: {
+                        color: 'red'
+                    }
+                })
                 return
             }
 
@@ -92,13 +100,20 @@ export default function CreateUserModal({ onAddUser }) {
             
             toast.success("User created successfully", {
                 description: `${newUser.first_name} ${newUser.last_name} has been added.`,
+                style: {
+                    color: "green"
+                }
             })
 
             reset()
             setOpen(false)
         } catch (err) {
             console.error("Error while creating new user", err)
-            toast.error("Failed to create user")
+            toast.error("Failed to create user", {
+                style: {
+                    color: 'red'
+                }
+            })
         }
     }
 

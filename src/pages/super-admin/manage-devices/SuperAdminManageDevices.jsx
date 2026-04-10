@@ -1,4 +1,4 @@
-
+// SuperAdminManageDevices.jsx (Updated - Complete)
 import DeviceFilter from "@/components/manage-gps/DeviceFitler"
 import AdminSubHeader from "@/components/AdminSubHeader"
 import AddGPSDeviceModal from "@/components/manage-gps/AddGPSDeviceModal"
@@ -7,18 +7,16 @@ import { useSelector } from "react-redux"
 import { selectUser } from "@/lib/features/auth/authSlice"
 import { useMemo, useState } from "react"
 
-
-const initial_devices = [
+const initialDevices = [
     {
-        id: 1,
+        id: "1",
         deviceId: "GPS-001-PUNE",
         imei: "354678901234560",
         simNo: "9833012345",
         firmware: "v2.4.1",
         homeDC: "Pune Warehouse DC",
         brand: "Tata Westside",
-        // New fields — no assignedTruck, instead currentTripId + status reflects lifecycle
-        status: "in_transit",         // available | in_transit | at_store | offline
+        status: "in_transit",
         currentTripId: "TRP-2841",
         currentTruckReg: "MH12AB1234",
         currentDriverName: "Ravi Deshmukh",
@@ -34,7 +32,7 @@ const initial_devices = [
         installDate: "Jan 2023",
     },
     {
-        id: 2,
+        id: "2",
         deviceId: "GPS-002-PUNE",
         imei: "354678901234561",
         simNo: "9833012346",
@@ -57,14 +55,14 @@ const initial_devices = [
         installDate: "Jun 2023",
     },
     {
-        id: 3,
+        id: "3",
         deviceId: "GPS-003-PUNE",
         imei: "354678901234562",
         simNo: "9833012347",
         firmware: "v2.3.8",
         homeDC: "Nashik DC",
         brand: "Tata Cliq",
-        status: "at_store",           // handed to store, awaiting DC pickup
+        status: "at_store",
         currentTripId: "TRP-2839",
         currentTruckReg: null,
         currentDriverName: null,
@@ -80,14 +78,14 @@ const initial_devices = [
         installDate: "Feb 2022",
     },
     {
-        id: 4,
+        id: "4",
         deviceId: "GPS-004-PUNE",
         imei: "354678901234563",
         simNo: "9833012348",
         firmware: "v2.4.0",
         homeDC: "Pune Warehouse DC",
         brand: null,
-        status: "available",          // sitting at DC, ready to use
+        status: "available",
         currentTripId: null,
         currentTruckReg: null,
         currentDriverName: null,
@@ -103,7 +101,7 @@ const initial_devices = [
         installDate: "Mar 2026",
     },
     {
-        id: 5,
+        id: "5",
         deviceId: "GPS-005-PUNE",
         imei: "354678901234564",
         simNo: "9833012349",
@@ -128,11 +126,12 @@ const initial_devices = [
 ]
 
 export default function SuperAdminManageDevices() {
-    const { user } = useSelector(selectUser);
-
+    const { user } = useSelector(selectUser)
     const isadmin = user.role === 'super_admin'
-    const [devices, setDevices] = useState(initial_devices)
+    
+    const [devices, setDevices] = useState(initialDevices)
     const [searchInput, setSearchInput] = useState("")
+    const [open, setOpen] = useState(false)
 
     const handleClear = () => setSearchInput("")
 
@@ -152,14 +151,15 @@ export default function SuperAdminManageDevices() {
         setDevices((prev) => prev.filter((device) => device.id !== deviceId))
     }
 
-    const filteredDevice = useMemo(() => {
+    const filteredDevices = useMemo(() => {
         const search = searchInput.trim().toLowerCase()
 
         if (!search) return devices
 
         return devices.filter((device) =>
             device.deviceId.toLowerCase().includes(search) ||
-            device.imei.toLowerCase().includes(search)
+            device.imei.toLowerCase().includes(search) ||
+            device.simNo.toLowerCase().includes(search)
         )
     }, [devices, searchInput])
 
@@ -168,19 +168,28 @@ export default function SuperAdminManageDevices() {
             <AdminSubHeader
                 to={isadmin ? '/admin' : '/dc'}
                 heading={'GPS Devices'}
-                subh={isadmin ? "All tracking devices across every brand and DC — register, assign to DCs, monitor health" : "GPS devices assigned to this DC — monitor status, check diagnostics and manage device returns from stores"}
+                subh={
+                    isadmin 
+                        ? "All tracking devices across every brand and DC — register, assign to DCs, monitor health"
+                        : "GPS devices assigned to this DC — monitor status, check diagnostics and manage device returns from stores"
+                }
             />
 
             <DeviceFilter
-                CreateButton={isadmin ? <AddGPSDeviceModal onAdd={handleAddDevice} /> : null}
+                CreateButton={isadmin ? <AddGPSDeviceModal
+    open={open}
+    setOpen={setOpen}
+    onAdd={handleAddDevice}
+/> : null}
                 searchInput={searchInput}
                 setSearchInput={setSearchInput}
                 handleClear={handleClear}
             />
+            
             <DeviceTable 
-                devices={filteredDevice}
-                        onEditDevice={handleEditDevice}
-                        onDeleteDevice={handleDeleteDevice}
+                devices={filteredDevices}
+                onEditDevice={handleEditDevice}
+                onDeleteDevice={handleDeleteDevice}
             />
         </section>
     )

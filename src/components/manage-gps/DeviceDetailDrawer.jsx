@@ -28,10 +28,15 @@ function SignalBars({ strength }) {
     const color = strength > 60 ? "bg-green-500" : strength > 30 ? "bg-amber-500" : "bg-gray-300"
     return (
         <div className="flex items-end gap-0.5 h-4">
-            {[25, 50, 75, 100].map((t, i) => (
-                <div key={i} className={`w-1.5 rounded-sm ${strength >= t ? color : "bg-gray-200"}`}
-                    style={{ height: `${(i + 1) * 5 + 4}px` }} />
-            ))}
+            {
+                strength > 0 && (
+                    [25, 50, 75, 100].map((t, i) => (
+                        <div key={i} className={`w-1.5 rounded-sm ${strength >= t ? color : "bg-gray-200"}`}
+                            style={{ height: `${(i + 1) * 5 + 4}px` }} />
+                    ))
+                )
+            }
+
             <span className="ml-1.5 text-sm font-medium text-gray-700">
                 {strength > 0 ? `${strength}%` : "No signal"}
             </span>
@@ -64,7 +69,7 @@ export default function DeviceDetailDrawer({ device, open, onClose }) {
     if (!device) return null
 
     console.log(device);
-    
+
 
     const isOnline = device.status === "in_transit"
     const hasWarning = device.battery <= 15 || device.signalStrength < 30
@@ -231,51 +236,51 @@ export default function DeviceDetailDrawer({ device, open, onClose }) {
                     {
                         device.lastPing !== 'Never' && (
                             <div className="px-4 sm:px-6 py-4 flex-1">
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                            Recent pings
-                        </p>
+                                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                                    Recent pings
+                                </p>
 
-                        <div className="flex flex-col gap-0">
-                            {mockPingLog.map((ping, i) => (
-                                <div
-                                    key={i}
-                                    className="flex items-start gap-3 py-2.5 border-b last:border-0"
-                                >
-                                    <div
-                                        className={`mt-0.5 rounded-full p-0.5 shrink-0 ${ping.ok ? "bg-green-100" : "bg-red-100"
-                                            }`}
-                                    >
-                                        {ping.ok ? (
-                                            <CheckCircle2 size={12} className="text-green-600" />
-                                        ) : (
-                                            <XCircle size={12} className="text-red-400" />
-                                        )}
-                                    </div>
+                                <div className="flex flex-col gap-0">
+                                    {mockPingLog.map((ping, i) => (
+                                        <div
+                                            key={i}
+                                            className="flex items-start gap-3 py-2.5 border-b last:border-0"
+                                        >
+                                            <div
+                                                className={`mt-0.5 rounded-full p-0.5 shrink-0 ${ping.ok ? "bg-green-100" : "bg-red-100"
+                                                    }`}
+                                            >
+                                                {ping.ok ? (
+                                                    <CheckCircle2 size={12} className="text-green-600" />
+                                                ) : (
+                                                    <XCircle size={12} className="text-red-400" />
+                                                )}
+                                            </div>
 
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between gap-2 flex-wrap">
-                                            <p className="text-xs font-medium text-gray-700">
-                                                {ping.ok ? "Ping received" : "Ping missed"}
-                                            </p>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between gap-2 flex-wrap">
+                                                    <p className="text-xs font-medium text-gray-700">
+                                                        {ping.ok ? "Ping received" : "Ping missed"}
+                                                    </p>
 
-                                            <p className="text-xs text-gray-400 font-mono">
-                                                {ping.time}
-                                            </p>
+                                                    <p className="text-xs text-gray-400 font-mono">
+                                                        {ping.time}
+                                                    </p>
+                                                </div>
+
+                                                {ping.ok && (
+                                                    <p className="text-xs text-gray-400 font-mono break-all">
+                                                        {ping.lat}, {ping.lng} · {ping.signal}% signal
+                                                    </p>
+                                                )}
+                                            </div>
                                         </div>
-
-                                        {ping.ok && (
-                                            <p className="text-xs text-gray-400 font-mono break-all">
-                                                {ping.lat}, {ping.lng} · {ping.signal}% signal
-                                            </p>
-                                        )}
-                                    </div>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    </div>
+                            </div>
                         )
                     }
-                    
+
 
                 </div>
 

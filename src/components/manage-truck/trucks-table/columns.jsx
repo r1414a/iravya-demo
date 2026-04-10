@@ -56,6 +56,9 @@ function ActionsCell({ row, onEditTruck, onDeleteTruck }) {
         await onDeleteTruck(truck.id)
         toast.success("Truck deleted successfully", {
             description: `${truck.registration_no} has been removed.`,
+            style: {
+                    color: "green"
+                }
         })
     }
 

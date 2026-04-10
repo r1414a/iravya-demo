@@ -92,6 +92,9 @@
                     
                     toast.success("DC updated successfully", {
                         description: `${updatedDC.dc_name} has been updated.`,
+                        style: {
+                    color: "green"
+                }
                     })
                 } else {
                     // Add mode
@@ -118,6 +121,9 @@
                     
                     toast.success("DC added successfully", {
                         description: `${newDC.dc_name} has been created.`,
+                        style: {
+                    color: "green"
+                }
                     })
                     
                     reset()
@@ -127,7 +133,10 @@
             } catch (err) {
                 console.error(err)
                 toast.error("Failed to save DC", {
-                    description: err.message || "Please try again"
+                    description: err.message || "Please try again",
+                    style: {
+                        color: 'red'
+                    }
                 })
             }
         }

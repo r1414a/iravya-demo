@@ -82,7 +82,11 @@ export default function StoreForm({ mode, store, onAddStore, onEditStore }) {
         e.preventDefault()
 
         if (!form.brand || !form.name || !form.city || !form.address) {
-            toast.error("Please fill in all required fields")
+            toast.error("Please fill in all required fields",{
+                style: {
+                    color: "red"
+                }
+            })
             return
         }
 
@@ -105,6 +109,9 @@ export default function StoreForm({ mode, store, onAddStore, onEditStore }) {
                 
                 toast.success("Store updated successfully", {
                     description: `${updatedStore.name} has been updated.`,
+                    style: {
+                    color: "green"
+                }
                 })
             } else {
                 const newStore = {
@@ -129,6 +136,9 @@ export default function StoreForm({ mode, store, onAddStore, onEditStore }) {
                 
                 toast.success("Store added successfully", {
                     description: `${newStore.name} has been created.`,
+                    style: {
+                    color: "green"
+                }
                 })
 
                 // Reset form
@@ -149,7 +159,10 @@ export default function StoreForm({ mode, store, onAddStore, onEditStore }) {
         } catch (err) {
             console.error(err)
             toast.error("Failed to save store", {
-                description: err.message || "Please try again"
+                description: err.message || "Please try again",
+                style: {
+                    color: "red"
+                }
             })
         }
     }

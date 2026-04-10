@@ -85,6 +85,9 @@
 
                 toast.success("Driver added successfully", {
                     description: `${newDriver.full_name} has been created.`,
+                    style: {
+                    color: "green"
+                }
                 })
                 reset()
                 setOpen(false)

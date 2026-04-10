@@ -1,3 +1,4 @@
+// device-table/data-table.jsx
 import {
     flexRender,
     getCoreRowModel,
@@ -16,21 +17,20 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-// import EditUserDrawer from "./EditUserDrawer"
 
-export function DataTable({ columns, data,onRowClick }) {
-//     const [open, setOpen] = useState(false)
-const [columnFilters, setColumnFilters] = useState([])
+export function DataTable({ columns, data }) {
+    const [columnFilters, setColumnFilters] = useState([])
+
     const table = useReactTable({
         data,
         columns,
+        state: {
+            columnFilters,
+        },
+        onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        state: {
-            columnFilters
-        },
-        onColumnFiltersChange: setColumnFilters,
         initialState: {
             pagination: {
                 pageSize: 5,
@@ -46,10 +46,12 @@ const [columnFilters, setColumnFilters] = useState([])
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <TableHead key={header.id} className="font-bold">
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                              header.column.columnDef.header,
+                                              header.getContext()
+                                          )}
                                 </TableHead>
                             ))}
                         </TableRow>
@@ -57,30 +59,37 @@ const [columnFilters, setColumnFilters] = useState([])
                 </TableHeader>
 
                 <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <TableRow 
-                        //  onClick={() => onRowClick?.(row.original)}
-                            // onClick={
-                            //     () => {
-                            //         setOpen(true);
-                            //         setSelectedUser(row.original)
-                            //     }
-                            // }
-                            key={row.id} 
-                            className="hover:bg-muted">
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext()
-                                    )}
-                                </TableCell>
-                            ))}
+                    {table.getRowModel().rows.length ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow
+                                key={row.id}
+                                className="hover:bg-muted"
+                            >
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(
+                                            cell.column.columnDef.cell,
+                                            cell.getContext()
+                                        )}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell
+                                colSpan={columns.length}
+                                className="text-center py-6 text-gray-500"
+                            >
+                                No devices found
+                            </TableCell>
                         </TableRow>
-                    ))}
+                    )}
                 </TableBody>
             </Table>
-            <div className="flex items-center justify-between px-4 py-3">
+
+            {/* Pagination */}
+            <div className="flex items-center justify-between px-4 py-3 border-t">
                 <div className="text-sm text-black font-semibold">
                     Page {table.getState().pagination.pageIndex + 1} of{" "}
                     {table.getPageCount()}
@@ -104,9 +113,6 @@ const [columnFilters, setColumnFilters] = useState([])
                     </Button>
                 </div>
             </div>
-
-
-            {/* <EditUserDrawer open={open} setOpen={setOpen} selectedUser={selectedUser}/> */}
         </div>
     )
 }

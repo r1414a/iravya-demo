@@ -38,6 +38,9 @@ function ActionsCell({ row, onEditDC, onDeleteDC }) {
         await onDeleteDC(dc.id)
         toast.success("DC deleted successfully", {
             description: `${dc.dc_name} has been removed.`,
+            style: {
+                    color: "green"
+                }
         })
     }
 

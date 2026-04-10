@@ -1,4 +1,4 @@
-
+// AddGPSDeviceModal.jsx (Updated)
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select"
 import { Cpu } from "lucide-react"
 import CreateFormSheetTrigger from "../CreateFormSheetTrigger"
-import { showSuccessToast } from "@/lib/utils/showSuccessToast"
+import { toast } from "sonner"
 
 export default function AddGPSDeviceModal({
     onAdd,
@@ -49,10 +49,16 @@ export default function AddGPSDeviceModal({
         installDate: "",
     })
 
-    // Prefill
     useEffect(() => {
         if (editingDevice && open) {
-            setForm(editingDevice)
+            setForm({
+                deviceId: editingDevice.deviceId,
+                imei: editingDevice.imei,
+                simNo: editingDevice.simNo,
+                firmware: editingDevice.firmware,
+                homeDC: editingDevice.homeDC,
+                installDate: editingDevice.installDate,
+            })
         }
     }, [editingDevice, open])
 
@@ -72,29 +78,56 @@ export default function AddGPSDeviceModal({
     }
 
     const handleSubmit = () => {
-        if (!form.deviceId || !form.imei) return
+        if (!form.deviceId || !form.imei) {
+            toast.error("Please fill in required fields",{
+                style: {
+                    color: 'red'
+                }
+            })
+            return
+        }
 
         if (isEdit) {
             const updated = { ...editingDevice, ...form }
             onEdit(updated)
 
-            showSuccessToast("Device updated", updated.deviceId)
+            toast.success("Device updated successfully", {
+                description: `${updated.deviceId} has been updated.`,
+                style: {
+                    color: "green"
+                }
+            })
         } else {
             const newDevice = {
                 id: crypto.randomUUID(),
                 ...form,
+                deviceId: form.deviceId.toUpperCase(),
+                brand: null,
                 status: "available",
+                currentTripId: null,
+                currentTruckReg: null,
+                currentDriverName: null,
+                currentStoreId: null,
+                currentStoreName: null,
                 battery: 100,
                 signalStrength: 0,
                 lastPing: "Never",
                 lastPingDate: "—",
                 totalTrips: 0,
                 tripsThisMonth: 0,
+                location: "DC shelf",
             }
 
             onAdd(newDevice)
 
-            showSuccessToast("Device added", newDevice.deviceId)
+            toast.success("Device registered successfully", {
+                description: `${newDevice.deviceId} has been added.`,
+                style: {
+                    color: "green"
+                }
+            }
+        )
+            
             resetForm()
         }
 
@@ -103,57 +136,53 @@ export default function AddGPSDeviceModal({
 
     return (
         <Sheet open={open} onOpenChange={setOpen}>
-            {!isEdit && (
-                <CreateFormSheetTrigger text="Register Device" />
-            )}
+            {!isEdit && <CreateFormSheetTrigger text="Register Device" />}
 
             <SheetContent className="w-full sm:max-w-md lg:max-w-lg bg-white p-0 flex flex-col">
-                <SheetHeader className="border-b border-gray-200">
+                <SheetHeader className="border-b border-gray-200 px-4 sm:px-6 pt-5 sm:pt-6 pb-4">
                     <SheetTitle>
                         {isEdit ? "Edit GPS device" : "Register GPS device"}
                     </SheetTitle>
                     <SheetDescription>
-                        {isEdit
-                            ? "Update device details"
-                            : "Add a new tracking device"}
+                        {isEdit ? "Update device details" : "Add a new tracking device"}
                     </SheetDescription>
                 </SheetHeader>
 
-                <div className="flex-1 overflow-y-auto p-4">
+                <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4">
                     <FieldGroup>
                         <FieldSet>
                             <FieldGroup>
-
-                                {/* Device ID + IMEI */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
-                                        <FieldLabel>Device ID</FieldLabel>
+                                        <FieldLabel>Device ID <span className="text-red-500">*</span></FieldLabel>
                                         <Input
                                             value={form.deviceId}
                                             onChange={(e) => handleChange("deviceId", e.target.value)}
-                                            placeholder="GPS-006-PUNE" className="font-mono uppercase placeholder:text-sm text-sm sm:text-md"
+                                            placeholder="GPS-006-PUNE" 
+                                            className="font-mono uppercase placeholder:text-sm text-sm sm:text-md"
                                         />
                                     </Field>
 
                                     <Field>
-                                        <FieldLabel>IMEI</FieldLabel>
+                                        <FieldLabel>IMEI <span className="text-red-500">*</span></FieldLabel>
                                         <Input
                                             value={form.imei}
                                             maxLength={15}
                                             onChange={(e) => handleChange("imei", e.target.value)}
-                                            placeholder="15-digit IMEI" className="font-mono placeholder:text-sm text-sm sm:text-md"
+                                            placeholder="15-digit IMEI" 
+                                            className="font-mono placeholder:text-sm text-sm sm:text-md"
                                         />
                                     </Field>
                                 </div>
 
-                                {/* SIM + Firmware */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
                                         <FieldLabel>SIM</FieldLabel>
                                         <Input
                                             value={form.simNo}
                                             onChange={(e) => handleChange("simNo", e.target.value)}
-                                            placeholder="9833012345" className="font-mono placeholder:text-sm text-sm sm:text-md"
+                                            placeholder="9833012345" 
+                                            className="font-mono placeholder:text-sm text-sm sm:text-md"
                                         />
                                     </Field>
 
@@ -166,7 +195,7 @@ export default function AddGPSDeviceModal({
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select..." />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent className="bg-white border shadow-md">
                                                 <SelectGroup>
                                                     <SelectLabel>Version</SelectLabel>
                                                     <SelectItem value="v2.4.1">v2.4.1</SelectItem>
@@ -178,7 +207,6 @@ export default function AddGPSDeviceModal({
                                     </Field>
                                 </div>
 
-                                {/* DC */}
                                 <Field>
                                     <FieldLabel>Assign DC</FieldLabel>
                                     <Select
@@ -188,7 +216,7 @@ export default function AddGPSDeviceModal({
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select DC" />
                                         </SelectTrigger>
-                                        <SelectContent>
+                                        <SelectContent className="bg-white border shadow-md">
                                             <SelectGroup>
                                                 <SelectLabel>Warehouses</SelectLabel>
                                                 <SelectItem value="Pune Warehouse DC">
@@ -201,7 +229,6 @@ export default function AddGPSDeviceModal({
                                                     Nashik DC
                                                 </SelectItem>
                                             </SelectGroup>
-
                                         </SelectContent>
                                     </Select>
                                     <FieldDescription className="text-xs">
@@ -209,21 +236,19 @@ export default function AddGPSDeviceModal({
                                     </FieldDescription>
                                 </Field>
 
-                                {/* Date */}
                                 <Field>
                                     <FieldLabel>Install date</FieldLabel>
                                     <Input
                                         type="date"
                                         value={form.installDate}
                                         onChange={(e) => handleChange("installDate", e.target.value)}
-                                        className={'placeholder:text-sm text-sm sm:text-md'}
+                                        className="placeholder:text-sm text-sm sm:text-md"
                                     />
                                     <FieldDescription className="text-xs">
-                                        Leave blank to give date of today
+                                        Leave blank to use today's date
                                     </FieldDescription>
                                 </Field>
 
-                                {/* Info */}
                                 <div className="flex items-start gap-2 bg-blue-50 border border-blue-100 rounded-md px-3 py-2.5">
                                     <Cpu size={14} className="text-blue-500 mt-0.5 shrink-0" />
                                     <p className="text-xs text-blue-700 leading-relaxed">
@@ -232,22 +257,21 @@ export default function AddGPSDeviceModal({
                                         assigns it to a trip during dispatch — not to a specific truck.
                                     </p>
                                 </div>
-
                             </FieldGroup>
                         </FieldSet>
                     </FieldGroup>
                 </div>
 
-                <SheetFooter className="border-t p-3 flex gap-2">
+                <SheetFooter className="border-t px-4 sm:px-6 py-4 flex flex-col sm:flex-row gap-2">
                     <Button
                         onClick={handleSubmit}
-                        className="w-full bg-maroon"
+                        className="w-full sm:w-1/2 bg-maroon hover:bg-maroon-dark"
                     >
                         {editingDevice ? "Update" : "Register"} <Cpu />
                     </Button>
 
                     <SheetClose asChild>
-                        <Button variant="outline" className="w-full">
+                        <Button variant="outline" className="w-full sm:w-1/2">
                             Cancel
                         </Button>
                     </SheetClose>

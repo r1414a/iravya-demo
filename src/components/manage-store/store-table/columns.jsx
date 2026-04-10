@@ -40,6 +40,9 @@ function ActionsCell({ row, onEditStore, onDeleteStore }) {
         await onDeleteStore(store.id)
         toast.success("Store deleted successfully", {
             description: `${store.name} has been removed.`,
+            style: {
+                    color: "green"
+                }
         })
     }
 

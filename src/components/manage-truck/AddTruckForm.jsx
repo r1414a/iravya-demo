@@ -402,6 +402,9 @@ export default function AddTruckModal({
 
                 toast.success("Truck updated successfully", {
                     description: `${updatedTruck.registration_no} has been updated.`,
+                    style: {
+                    color: "green"
+                }
                 })
             } else {
                 const newTruck = {
@@ -429,6 +432,9 @@ export default function AddTruckModal({
 
                 toast.success("Truck added successfully", {
                     description: `${newTruck.registration_no} has been created.`,
+                    style: {
+                    color: "green"
+                }
                 })
 
                 reset({
@@ -453,6 +459,9 @@ export default function AddTruckModal({
             console.error(err)
             toast.error("Failed to save truck", {
                 description: err.message || "Please try again",
+                style: {
+                    color: "red"
+                }
             })
         }
     }

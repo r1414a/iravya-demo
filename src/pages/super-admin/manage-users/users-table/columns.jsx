@@ -24,6 +24,9 @@ function ActionsCell({ row, onEditUser, onDeleteUser }) {
     await onDeleteUser(user.id)
     toast.success("User deleted successfully", {
       description: `${user.first_name} ${user.last_name} has been removed.`,
+      style: {
+                    color: "green"
+                }
     })
   }
 
