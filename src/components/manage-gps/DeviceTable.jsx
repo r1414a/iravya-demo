@@ -123,17 +123,17 @@ const devices = [
 ]
  
 // showBrandColumn — super admin sees brand column, DC does not
-export default function DeviceTable({ showBrandColumn = false }) {
+export default function DeviceTable({ devices, onEditDevice, onDeleteDevice }) {
     const [selectedDevice, setSelectedDevice] = useState(null)
-    const cols = getColumns({ showBrandColumn })
+    const cols = getColumns({ onEditDevice, onDeleteDevice })
  
     return (
         <section className="mt-6 px-4 lg:px-10">
             <div className="border rounded-lg">
                 <DataTable
+                    //  columns={columns({ onEditDriver, onDeleteDriver })}
                     columns={cols}
                     data={devices}
-                    onRowClick={(row) => setSelectedDevice(row)}
                 />
             </div>
  

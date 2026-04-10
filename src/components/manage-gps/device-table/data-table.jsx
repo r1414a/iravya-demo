@@ -59,7 +59,7 @@ const [columnFilters, setColumnFilters] = useState([])
                 <TableBody>
                     {table.getRowModel().rows.map((row) => (
                         <TableRow 
-                         onClick={() => onRowClick?.(row.original)}
+                        //  onClick={() => onRowClick?.(row.original)}
                             // onClick={
                             //     () => {
                             //         setOpen(true);

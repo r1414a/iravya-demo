@@ -1,4 +1,4 @@
-import { Badge }  from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -18,22 +18,39 @@ import {
     ChevronRight,
     MapPin,
     Store,
+    Eye,
 } from "lucide-react"
- 
+import { useState } from "react"
+import AddGPSDeviceModal from "../AddGPSDeviceModal"
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet"
+import DeleteModal from "@/components/DeleteModal"
+import { useLocation } from "react-router-dom"
+import DeviceDetailDrawer from "../DeviceDetailDrawer"
+import { toast } from "sonner"
+
+
 // ── Updated status config — new lifecycle values ──────────────────────────────
 const statusStyles = {
-    available:  "bg-green-100 text-green-700",
+    available: "bg-green-100 text-green-700",
     in_transit: "bg-blue-100 text-blue-700",
-    at_store:   "bg-amber-100 text-amber-700",
-    offline:    "bg-gray-100 text-gray-500",
+    at_store: "bg-amber-100 text-amber-700",
+    offline: "bg-gray-100 text-gray-500",
 }
 const statusLabels = {
-    available:  "Available",
+    available: "Available",
     in_transit: "In transit",
-    at_store:   "At store",
-    offline:    "Offline",
+    at_store: "At store",
+    offline: "Offline",
 }
- 
+
 function SignalBars({ strength }) {
     const color = strength > 60 ? "bg-green-500" : strength > 30 ? "bg-amber-500" : "bg-gray-300"
     return (
@@ -51,7 +68,7 @@ function SignalBars({ strength }) {
         </div>
     )
 }
- 
+
 function BatteryBar({ level }) {
     const color = level > 40 ? "bg-green-500" : level > 15 ? "bg-amber-500" : "bg-red-500"
     return (
@@ -66,9 +83,81 @@ function BatteryBar({ level }) {
         </div>
     )
 }
- 
+
+
+function DeviceActionsCell({ row, onEditDevice, onDeleteDevice }) {
+    const device = row.original
+    const { pathname } = useLocation()
+    const [editOpen, setEditOpen] = useState(false)
+    const [viewOpen, setViewOpen] = useState(false)
+
+    const handleDelete = async () => {
+        await onDeleteDevice(device.id)
+        toast.success("Device deleted successfully", {
+            description: `${device.deviceId} has been removed.`,
+        })
+    }
+
+    return (
+        <>
+            {/* 👁️ VIEW DRAWER */}
+            <DeviceDetailDrawer
+                device={device}
+                open={viewOpen}
+                onClose={() => setViewOpen(false)}
+            />
+
+            <div className="flex items-center gap-2 justify-end">
+
+                {/* 👁️ VIEW */}
+                {/* {device.totalTrips > 0 && ( */}
+                <Button
+                    variant="outline"
+                    size="xs"
+                    onClick={() => setViewOpen(true)}
+                    className="hover:bg-maroon cursor-pointer text-blue-800 hover:text-white"
+                >
+                    <Eye size={16} />
+                </Button>
+                {/* // )} */}
+
+                {/* ADMIN ONLY */}
+                {pathname.startsWith("/admin") && (
+                    <>
+                        {/* ✏️ EDIT */}
+                        <Button
+                            variant="outline"
+                            size="xs"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                setEditOpen(true)
+                            }}
+                        >
+                            <Pencil size={14} />
+                        </Button>
+
+                        <AddGPSDeviceModal
+                            open={editOpen}
+                            setOpen={setEditOpen}
+                            editingDevice={device}
+                            onEdit={onEditDevice}
+                        />
+
+                        {/* 🗑 DELETE */}
+                        <DeleteModal
+                            who={device.deviceId}
+                            m1active="Device will be removed from inventory and tracking system."
+                            onConfirm={handleDelete}
+                        />
+                    </>
+                )}
+            </div>
+        </>
+    )
+}
+
 // getColumns receives options so the same file serves both DC and super admin
-export function getColumns({ showBrandColumn = false } = {}) {
+export function getColumns({ showBrandColumn = false, onDelete, onEdit } = {}) {
     const cols = [
         // Device ID + IMEI + firmware
         {
@@ -85,7 +174,7 @@ export function getColumns({ showBrandColumn = false } = {}) {
                 )
             },
         },
- 
+
         // Brand column — only shown for super admin
         ...(showBrandColumn ? [{
             accessorKey: "brand",
@@ -94,7 +183,7 @@ export function getColumns({ showBrandColumn = false } = {}) {
                 <span className="text-sm text-gray-700">{row.original.brand ?? "—"}</span>
             ),
         }] : []),
- 
+
         // Current location — replaces old "Assigned truck" column
         // Shows where the device is right now: DC shelf | truck + trip | store name
         {
@@ -140,21 +229,21 @@ export function getColumns({ showBrandColumn = false } = {}) {
             // Filter by status using radio dropdown in header (moved here from separate column)
             filterFn: (row, id, value) => !value || row.getValue(id) === value,
         },
- 
+
         // Signal
         {
             accessorKey: "signalStrength",
             header: "Signal",
             cell: ({ row }) => <SignalBars strength={row.original.signalStrength} />,
         },
- 
+
         // Battery
         {
             accessorKey: "battery",
             header: "Battery",
             cell: ({ row }) => <BatteryBar level={row.original.battery} />,
         },
- 
+
         // Last ping
         {
             accessorKey: "lastPing",
@@ -166,7 +255,7 @@ export function getColumns({ showBrandColumn = false } = {}) {
                 </div>
             ),
         },
- 
+
         // Status badge — radio filter in header
         {
             accessorKey: "statusBadge",
@@ -210,45 +299,58 @@ export function getColumns({ showBrandColumn = false } = {}) {
             },
             filterFn: (row, _id, value) => !value || row.original.status === value,
         },
- 
-        // Actions — no assign truck, no reassign. Only edit + re-ping + decommission
+
         {
             id: "actions",
             cell: ({ row }) => (
-                <div className="flex items-center gap-2 justify-end">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <MoreHorizontal size={16} />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align="end"
-                            className="bg-white border shadow-md w-44"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <DropdownMenuItem className="gap-2 text-sm cursor-pointer">
-                                <Pencil size={14} /> Edit device
-                            </DropdownMenuItem>
-                            <DropdownMenuItem className="gap-2 text-sm cursor-pointer">
-                                <RefreshCw size={14} /> Force re-ping
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="gap-2 text-sm cursor-pointer text-red-500">
-                                <Trash2 size={14} /> Decommission
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <ChevronRight size={16} className="text-gray-300" />
-                </div>
+                <DeviceActionsCell
+                    row={row}
+                    onEditDevice={onEdit}
+                    onDeleteDevice={onDelete}
+                />
             ),
-        },
+        }
+        // Actions — no assign truck, no reassign. Only edit + re-ping + decommission
+        // {
+        //     id: "actions",
+        //     cell: ({ row }) => (
+        //         <div className="flex items-center gap-2 justify-end">
+        //             <DropdownMenu>
+        //                 <DropdownMenuTrigger asChild>
+        //                     <Button
+        //                         variant="ghost"
+        //                         size="icon"
+        //                         className="h-8 w-8"
+        //                         onClick={(e) => e.stopPropagation()}
+        //                     >
+        //                         <MoreHorizontal size={16} />
+        //                     </Button>
+        //                 </DropdownMenuTrigger>
+        //                 <DropdownMenuContent
+        //                     align="end"
+        //                     className="bg-white border shadow-md w-44"
+        //                     onClick={(e) => e.stopPropagation()}
+        //                 >
+        //                     <DropdownMenuItem onClick={() => onEdit(row.original)} className="gap-2 text-sm cursor-pointer">
+        //                         <Pencil size={14} /> Edit device
+        //                     </DropdownMenuItem>
+        //                     <DropdownMenuItem className="gap-2 text-sm cursor-pointer">
+        //                         <RefreshCw size={14} /> Force re-ping
+        //                     </DropdownMenuItem>
+        //                     <DropdownMenuSeparator />
+        //                     <DropdownMenuItem
+        //                         className="gap-2 text-sm cursor-pointer text-red-500"
+        //                         onClick={() => onDelete(row.original.id)}
+        //                     >
+        //                         <Trash2 size={14} /> Delete
+        //                     </DropdownMenuItem>
+        //                 </DropdownMenuContent>
+        //             </DropdownMenu>
+        //             <ChevronRight size={16} className="text-gray-300" />
+        //         </div>
+        //     ),
+        // },
     ]
- 
+
     return cols
 }

@@ -63,6 +63,9 @@ const mockPingLog = [
 export default function DeviceDetailDrawer({ device, open, onClose }) {
     if (!device) return null
 
+    console.log(device);
+    
+
     const isOnline = device.status === "in_transit"
     const hasWarning = device.battery <= 15 || device.signalStrength < 30
 
@@ -225,7 +228,9 @@ export default function DeviceDetailDrawer({ device, open, onClose }) {
 
 
                     {/* ── Recent pings ── */}
-                    <div className="px-4 sm:px-6 py-4 flex-1">
+                    {
+                        device.lastPing !== 'Never' && (
+                            <div className="px-4 sm:px-6 py-4 flex-1">
                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                             Recent pings
                         </p>
@@ -268,6 +273,9 @@ export default function DeviceDetailDrawer({ device, open, onClose }) {
                             ))}
                         </div>
                     </div>
+                        )
+                    }
+                    
 
                 </div>
 

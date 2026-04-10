@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import {lazy} from "react";
 import ProtectedRoute from "./ProtectedRoute";
 import { ROLES } from "./constants/constant";
+import Analytics from "./pages/super-admin/analytics/Analytics";
 
 const Auth = lazy(() => import("./pages/auth/Auth"))
 
@@ -97,6 +98,10 @@ const router = createBrowserRouter([
                     {
                         path: "settings",
                         element: <SuperAdminSettings />
+                    },
+                    {
+                        path: "analytics",
+                        element: <Analytics/>
                     },
                     {
                         path: "alerts",

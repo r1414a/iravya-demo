@@ -1,69 +1,175 @@
+
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
-    Sheet, SheetClose, SheetContent,
-    SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger,
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
 } from "@/components/ui/sheet"
 import {
-    Field, FieldDescription, FieldGroup, FieldLabel, FieldSet,
+    Field,
+    FieldDescription,
+    FieldGroup,
+    FieldLabel,
+    FieldSet,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import {
-    Select, SelectContent, SelectGroup,
-    SelectItem, SelectLabel, SelectTrigger, SelectValue,
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select"
-import { Plus, Cpu } from "lucide-react"
+import { Cpu } from "lucide-react"
 import CreateFormSheetTrigger from "../CreateFormSheetTrigger"
- 
-export default function AddGPSDeviceModal() {
+import { showSuccessToast } from "@/lib/utils/showSuccessToast"
+
+export default function AddGPSDeviceModal({
+    onAdd,
+    onEdit,
+    editingDevice = null,
+    open,
+    setOpen,
+}) {
+    const isEdit = !!editingDevice
+
+    const [form, setForm] = useState({
+        deviceId: "",
+        imei: "",
+        simNo: "",
+        firmware: "",
+        homeDC: "",
+        installDate: "",
+    })
+
+    // Prefill
+    useEffect(() => {
+        if (editingDevice && open) {
+            setForm(editingDevice)
+        }
+    }, [editingDevice, open])
+
+    const handleChange = (key, value) => {
+        setForm(prev => ({ ...prev, [key]: value }))
+    }
+
+    const resetForm = () => {
+        setForm({
+            deviceId: "",
+            imei: "",
+            simNo: "",
+            firmware: "",
+            homeDC: "",
+            installDate: "",
+        })
+    }
+
+    const handleSubmit = () => {
+        if (!form.deviceId || !form.imei) return
+
+        if (isEdit) {
+            const updated = { ...editingDevice, ...form }
+            onEdit(updated)
+
+            showSuccessToast("Device updated", updated.deviceId)
+        } else {
+            const newDevice = {
+                id: crypto.randomUUID(),
+                ...form,
+                status: "available",
+                battery: 100,
+                signalStrength: 0,
+                lastPing: "Never",
+                lastPingDate: "—",
+                totalTrips: 0,
+                tripsThisMonth: 0,
+            }
+
+            onAdd(newDevice)
+
+            showSuccessToast("Device added", newDevice.deviceId)
+            resetForm()
+        }
+
+        setOpen(false)
+    }
+
     return (
-        <Sheet direction="right">
-            <CreateFormSheetTrigger text='Register Device'/>
-            {/* <SheetTrigger className="flex items-center bg-maroon hover:bg-maroon-dark text-white rounded-md text-sm h-8 px-2">
-                <Plus className="w-4 h-4 mr-2" />
-                Register Device
-            </SheetTrigger> */}
- 
+        <Sheet open={open} onOpenChange={setOpen}>
+            {!isEdit && (
+                <CreateFormSheetTrigger text="Register Device" />
+            )}
+
             <SheetContent className="w-full sm:max-w-md lg:max-w-lg bg-white p-0 flex flex-col">
                 <SheetHeader className="border-b border-gray-200">
-                    <SheetTitle>Register GPS device</SheetTitle>
+                    <SheetTitle>
+                        {isEdit ? "Edit GPS device" : "Register GPS device"}
+                    </SheetTitle>
                     <SheetDescription>
-                        Add a new tracking device to the platform and assign it to a DC
+                        {isEdit
+                            ? "Update device details"
+                            : "Add a new tracking device"}
                     </SheetDescription>
                 </SheetHeader>
- 
-                <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+
+                <div className="flex-1 overflow-y-auto p-4">
                     <FieldGroup>
                         <FieldSet>
                             <FieldGroup>
- 
+
                                 {/* Device ID + IMEI */}
-                                <div  className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
                                         <FieldLabel>Device ID</FieldLabel>
-                                        <Input placeholder="GPS-006-PUNE" className="font-mono uppercase placeholder:text-sm text-sm sm:text-md" />
+                                        <Input
+                                            value={form.deviceId}
+                                            onChange={(e) => handleChange("deviceId", e.target.value)}
+                                            placeholder="GPS-006-PUNE" className="font-mono uppercase placeholder:text-sm text-sm sm:text-md"
+                                        />
                                     </Field>
+
                                     <Field>
-                                        <FieldLabel>IMEI number</FieldLabel>
-                                        <Input placeholder="15-digit IMEI" className="font-mono placeholder:text-sm text-sm sm:text-md" maxLength={15} />
+                                        <FieldLabel>IMEI</FieldLabel>
+                                        <Input
+                                            value={form.imei}
+                                            maxLength={15}
+                                            onChange={(e) => handleChange("imei", e.target.value)}
+                                            placeholder="15-digit IMEI" className="font-mono placeholder:text-sm text-sm sm:text-md"
+                                        />
                                     </Field>
                                 </div>
- 
-                                {/* SIM + firmware */}
-                                <div  className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+                                {/* SIM + Firmware */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <Field>
-                                        <FieldLabel>SIM card number</FieldLabel>
-                                        <Input placeholder="9833012345" className="font-mono placeholder:text-sm text-sm sm:text-md" />
+                                        <FieldLabel>SIM</FieldLabel>
+                                        <Input
+                                            value={form.simNo}
+                                            onChange={(e) => handleChange("simNo", e.target.value)}
+                                            placeholder="9833012345" className="font-mono placeholder:text-sm text-sm sm:text-md"
+                                        />
                                     </Field>
+
                                     <Field>
-                                        <FieldLabel>Firmware version</FieldLabel>
-                                        <Select>
+                                        <FieldLabel>Firmware</FieldLabel>
+                                        <Select
+                                            value={form.firmware}
+                                            onValueChange={(val) => handleChange("firmware", val)}
+                                        >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select..." />
                                             </SelectTrigger>
-                                            <SelectContent className="bg-white border shadow-md">
+                                            <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Version</SelectLabel>
-                                                    <SelectItem value="v2.4.1">v2.4.1 (latest)</SelectItem>
+                                                    <SelectItem value="v2.4.1">v2.4.1</SelectItem>
                                                     <SelectItem value="v2.4.0">v2.4.0</SelectItem>
                                                     <SelectItem value="v2.3.8">v2.3.8</SelectItem>
                                                 </SelectGroup>
@@ -71,55 +177,53 @@ export default function AddGPSDeviceModal() {
                                         </Select>
                                     </Field>
                                 </div>
- 
-                                {/* Brand */}
-                                {/* <Field>
-                                    <FieldLabel>Brand</FieldLabel>
-                                    <Select>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select brand..." />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white border shadow-md">
-                                            <SelectGroup>
-                                                <SelectLabel>Brands</SelectLabel>
-                                                <SelectItem value="tata_westside">Tata Westside</SelectItem>
-                                                <SelectItem value="zudio">Zudio</SelectItem>
-                                                <SelectItem value="tata_cliq">Tata Cliq</SelectItem>
-                                                <SelectItem value="tanishq">Tanishq</SelectItem>
-                                            </SelectGroup>
-                                        </SelectContent>
-                                    </Select>
-                                </Field> */}
- 
-                                {/* Assign to DC — super admin assigns device to a DC, not to a truck */}
+
+                                {/* DC */}
                                 <Field>
-                                    <FieldLabel>Assign to DC</FieldLabel>
-                                    <Select>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder="Select data center..." />
+                                    <FieldLabel>Assign DC</FieldLabel>
+                                    <Select
+                                        value={form.homeDC}
+                                        onValueChange={(val) => handleChange("homeDC", val)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select DC" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-white border shadow-md">
+                                        <SelectContent>
                                             <SelectGroup>
-                                                <SelectLabel>Data Centers</SelectLabel>
-                                                <SelectItem value="pune_dc">Pune Warehouse DC</SelectItem>
-                                                <SelectItem value="mumbai_dc">Mumbai Warehouse DC</SelectItem>
-                                                <SelectItem value="nashik_dc">Nashik DC</SelectItem>
-                                                <SelectItem value="nagpur_dc">Nagpur DC</SelectItem>
+                                                <SelectLabel>Warehouses</SelectLabel>
+                                                <SelectItem value="Pune Warehouse DC">
+                                                    Pune Warehouse DC
+                                                </SelectItem>
+                                                <SelectItem value="Mumbai Warehouse DC">
+                                                    Mumbai Warehouse DC
+                                                </SelectItem>
+                                                <SelectItem value="Nashik DC">
+                                                    Nashik DC
+                                                </SelectItem>
                                             </SelectGroup>
+
                                         </SelectContent>
                                     </Select>
                                     <FieldDescription className="text-xs">
                                         Device will appear in this DC's inventory as available
                                     </FieldDescription>
                                 </Field>
- 
-                                {/* Install date */}
+
+                                {/* Date */}
                                 <Field>
                                     <FieldLabel>Install date</FieldLabel>
-                                    <Input type="date" placeholder:text-sm text-sm sm:text-md/>
+                                    <Input
+                                        type="date"
+                                        value={form.installDate}
+                                        onChange={(e) => handleChange("installDate", e.target.value)}
+                                        className={'placeholder:text-sm text-sm sm:text-md'}
+                                    />
+                                    <FieldDescription className="text-xs">
+                                        Leave blank to give date of today
+                                    </FieldDescription>
                                 </Field>
- 
-                                {/* Info note */}
+
+                                {/* Info */}
                                 <div className="flex items-start gap-2 bg-blue-50 border border-blue-100 rounded-md px-3 py-2.5">
                                     <Cpu size={14} className="text-blue-500 mt-0.5 shrink-0" />
                                     <p className="text-xs text-blue-700 leading-relaxed">
@@ -128,28 +232,26 @@ export default function AddGPSDeviceModal() {
                                         assigns it to a trip during dispatch — not to a specific truck.
                                     </p>
                                 </div>
- 
+
                             </FieldGroup>
                         </FieldSet>
                     </FieldGroup>
                 </div>
 
+                <SheetFooter className="border-t p-3 flex gap-2">
+                    <Button
+                        onClick={handleSubmit}
+                        className="w-full bg-maroon"
+                    >
+                        {editingDevice ? "Update" : "Register"} <Cpu />
+                    </Button>
 
-                <SheetFooter className="flex flex-col sm:flex-row gap-2 items-center w-full border-t border-gray-200">
-                    <Button className='w-full sm:w-1/2 bg-maroon hover:bg-maroon-dark'>Register <Cpu /></Button>
-                    <SheetClose className='basis-1/2' asChild>
-                        <Button className="w-full" variant="outline">Cancel</Button>
+                    <SheetClose asChild>
+                        <Button variant="outline" className="w-full">
+                            Cancel
+                        </Button>
                     </SheetClose>
                 </SheetFooter>
- 
-                {/* <SheetFooter className="flex flex-row items-center w-full border-t border-gray-200">
-                    <Button className="basis-1/2 bg-maroon hover:bg-maroon-dark">
-                        Register <Cpu className="ml-1" size={15} />
-                    </Button>
-                    <SheetClose className="basis-1/2" asChild>
-                        <Button className="w-full" variant="outline">Cancel</Button>
-                    </SheetClose>
-                </SheetFooter> */}
             </SheetContent>
         </Sheet>
     )
