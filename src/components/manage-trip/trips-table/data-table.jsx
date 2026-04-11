@@ -1,9 +1,10 @@
+// trips-table/data-table.jsx
 import {
     flexRender,
     getCoreRowModel,
     useReactTable,
     getPaginationRowModel,
-    getFilteredRowModel
+    getFilteredRowModel,
 } from "@tanstack/react-table"
 import {
     Table,
@@ -15,24 +16,23 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-// import EditUserDrawer from "./EditUserDrawer"
 
-export function DataTable({ columns, data }) {
-//     const [open, setOpen] = useState(false)
-const [columnFilters, setColumnFilters] = useState([])
+export function DataTable({ columns, data=[] }) {
+    const [columnFilters, setColumnFilters] = useState([])
+
     const table = useReactTable({
         data,
         columns,
+        state: {
+            columnFilters,
+        },
+        onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        state: {
-            columnFilters
-        },
-        onColumnFiltersChange: setColumnFilters,
         initialState: {
             pagination: {
-                pageSize: 5,
+                pageSize: 10,
             },
         },
     })
@@ -41,14 +41,13 @@ const [columnFilters, setColumnFilters] = useState([])
         <div className="border rounded-lg">
             <Table>
                 <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
+                    {table.getHeaderGroups().map((hg) => (
+                        <TableRow key={hg.id}>
+                            {hg.headers.map((header) => (
                                 <TableHead key={header.id} className="font-bold">
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                    )}
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}
                         </TableRow>
@@ -56,32 +55,32 @@ const [columnFilters, setColumnFilters] = useState([])
                 </TableHeader>
 
                 <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <TableRow 
-                            // onClick={
-                            //     () => {
-                            //         setOpen(true);
-                            //         setSelectedUser(row.original)
-                            //     }
-                            // }
-                            key={row.id} 
-                            className="hover:bg-muted">
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext()
-                                    )}
-                                </TableCell>
-                            ))}
+                    {table.getRowModel().rows.length ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow key={row.id} className="hover:bg-muted">
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell
+                                colSpan={columns.length}
+                                className="text-center py-6 text-gray-500"
+                            >
+                                No trips found
+                            </TableCell>
                         </TableRow>
-                    ))}
+                    )}
                 </TableBody>
             </Table>
-            <div className="flex items-center justify-between px-4 py-3">
+
+            <div className="flex items-center justify-between px-4 py-3 border-t">
                 <div className="text-sm text-black font-semibold">
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
+                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                 </div>
 
                 <div className="flex gap-2">
@@ -102,9 +101,6 @@ const [columnFilters, setColumnFilters] = useState([])
                     </Button>
                 </div>
             </div>
-
-
-            {/* <EditUserDrawer open={open} setOpen={setOpen} selectedUser={selectedUser}/> */}
         </div>
     )
 }

@@ -1,6 +1,6 @@
         import { Badge } from "@/components/ui/badge"
         import { Button } from "@/components/ui/button"
-        import { MoreHorizontal, Pencil, KeyRound, Road } from "lucide-react"
+        import { MoreHorizontal, Pencil, KeyRound, Road, Map } from "lucide-react"
         import EditDriverSheet from "./EditDriverSheet"
         import TripHistorySheet from "./TripHistorySheet"
         import { useState } from "react"
@@ -15,11 +15,11 @@
         import { Checkbox } from "@/components/ui/checkbox"
         import { FieldLabel } from "@/components/ui/field"
         import TripDetailSheet from "../../manage-trip/TripDetailSheet"
-        import { useLocation } from "react-router-dom"
+        import { useLocation, useNavigate } from "react-router-dom"
         import DeleteModal from "@/components/DeleteModal"
         import { getNameInitials } from "@/lib/utils/getNameInitials"
         import { format, parseISO } from "date-fns"
-        import { toast } from "sonner"
+        
 
         const statusStyles = {
             Available: "bg-green-100 text-green-700",
@@ -30,6 +30,7 @@
         function ActionsCell({ row, onEditDriver, onDeleteDriver }) {
             const driver = row.original
             const { pathname } = useLocation()
+            const navigate = useNavigate()
 
             const [editOpen, setEditOpen] = useState(false)
             const [tripDetailsOpen, setTripDetailsOpen] = useState(false)
@@ -50,17 +51,20 @@
 
                     <TripDetailSheet
                         trip={{
-                            id: "TRP-2840",
-                            brand: "Zudio",
-                            truck: "MH14CD5678",
-                            driver: "Suresh M.",
-                            sourceDC: "Mumbai Warehouse DC",
-                            gpsDevice: "GPS-344-PUNE",
-                            stops: [{ name: "Hinjawadi Store", status: "pending" }],
+                            id: driver.current_trip,
+                            truck: driver.id === "1" ? "MH12AB1234" : "MH14CD8823",
+                            driver: driver.full_name,
+                            phone: driver.phone_number,
+                            sourceDC: driver.id === "1" ? "Pune Logistics Hub, Pimpri-Chinchwad" : "Nashik DC, MIDC Satpur",
+                            gpsDevice: driver.id ==="1" ? "GPS-002-PUNE": "GPS-342-PUNE",
+                            stops: [
+                                { name: driver.id === "1" ? "Phoenix Palladium, Mumbai" : "Zudio Store, Aurangabad Mall", status: "pending" }
+                            ],
                             stopsCount: 1,
                             status: "in_transit",
-                            departedAt: "Today, 08:15 AM",
-                            eta: "Today, 10:30 AM",
+                            departedAt: driver.id === "1" ? "Today, 06:30 AM": "Today, 07:00 AM",
+                            eta: driver.id === "1" ? "Today, 11:00 AM": "Today, 12:30 PM",
+                            distance: driver.distance,
                             completedAt: null,
                         }}
                         open={tripDetailsOpen}
@@ -101,12 +105,20 @@
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="bg-white border shadow-md w-40">
                                 {driver.current_trip && (
+                                    <>
                                     <DropdownMenuItem
                                         className="gap-2 text-sm cursor-pointer"
                                         onClick={() => setTripDetailsOpen(true)}
                                     >
                                         <Road size={14} /> View trip details
                                     </DropdownMenuItem>
+                                    {/* //so this trip id should come in truck data, but for only trucks who are in transit state */}
+                                <DropdownMenuItem 
+                                onClick={() => navigate(`/track?id=${driver.current_trip}`)}
+                                className="gap-2 text-sm cursor-pointer">
+                                    <Map size={14} /> View on map
+                                </DropdownMenuItem>
+                                </>
                                 )}
 
                                 <DropdownMenuItem

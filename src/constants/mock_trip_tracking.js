@@ -12,7 +12,7 @@ export const MOCK_TRIPS = {
       vehicle: "Heavy Freight",
     },
     trip: {
-      truck: "MH-12-AB-4567",
+      truck: "MH12AB1234",
       type: "Heavy Freight",
       capacity: "20 Tons",
       start: "Pune Logistics Hub, Pimpri-Chinchwad",
@@ -45,11 +45,12 @@ export const MOCK_TRIPS = {
       avatar: "SP",
       rating: 4.5,
       trips: 876,
+      licence: "MH1420180056789",
       experience: "6 years",
       vehicle: "Medium Carrier",
     },
     trip: {
-      truck: "MH-14-CD-8823",
+      truck: "MH14CD8823",
       type: "Medium Carrier",
       capacity: "10 Tons",
       start: "Nashik DC, MIDC Satpur",

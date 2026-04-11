@@ -12,7 +12,7 @@ import { Toaster } from 'sonner';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
       {/* <Suspense fallback={<LoadingSpinner />}> */}
         <RouterProvider router={router} />
       {/* </Suspense> */}

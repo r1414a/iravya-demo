@@ -162,10 +162,10 @@ function SectionTitle({ children, action }) {
     return (
         <div className="flex items-center justify-between mb-3">
             <div>
-                <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-0.5">
+                {/* <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-0.5">
                     Analytics
-                </p>
-                <h2 className="text-base font-bold text-slate-800">{children}</h2>
+                </p> */}
+                <h2 className="text-md font-semibold text-slate-800">{children}</h2>
             </div>
             {action}
         </div>
