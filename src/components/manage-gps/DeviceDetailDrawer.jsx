@@ -68,7 +68,7 @@ const mockPingLog = [
 export default function DeviceDetailDrawer({ device, open, onClose }) {
     if (!device) return null
 
-    console.log(device);
+    // console.log(device);
 
 
     const isOnline = device.status === "in_transit"

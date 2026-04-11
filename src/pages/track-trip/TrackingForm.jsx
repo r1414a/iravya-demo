@@ -15,6 +15,8 @@ import {
   AlertTriangle, CheckCircle2, Clock,
   Navigation, Phone, Star, Truck,
 } from "lucide-react"
+import { useSearchParams } from "react-router-dom"
+
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN
 
@@ -295,46 +297,107 @@ export default function TrackingForm({ MOCK_TRIPS }) {
   const [issueNote, setIssueNote] = useState("")
   const [reportDone, setReportDone] = useState(false)
   const [refId] = useState(() => `RPT-${Math.floor(Math.random() * 90000 + 10000)}`)
-  const intervalRef = useRef(null)
+  const intervalRef = useRef(null);
+  const [searchParams] = useSearchParams();
+  const TRIP_ID = searchParams.get("id");
+  
 
   const tripData = activeTripKey ? MOCK_TRIPS[activeTripKey] : null
   const statusCfg = tripData ? STATUS_CONFIG[tripData.status] : null
   const pct = Math.round(fraction * 100)
 
-  const handleTrack = async () => {
-    const key = tripIdInput.trim().toUpperCase()
-    // console.log(key, MOCK_TRIPS[key]);
-
-    if (!key) { setError("Please enter a Trip ID."); return }
-    if (!MOCK_TRIPS[key]) {
-      setError(`No trip found for "${tripIdInput}". Try TRP-001, TRP-002 or TRP-003`); return
-    }
-
-    setLoading(true); setRouteLoading(true); setError("")
-    setRoutePoints([]); setFraction(0); setActiveTripKey(key)
-    setSelectedIssue(null); setIssueNote(""); setReportDone(false)
-    if (intervalRef.current) clearInterval(intervalRef.current)
-
-    try {
-      const route = await fetchRoadRoute(MOCK_TRIPS[key].waypoints)
-      setRoutePoints(route)
-      const init = MOCK_TRIPS[key].progressFraction ?? 0.3
-      setFraction(init)
-
-      if (MOCK_TRIPS[key].status !== "delivered") {
-        intervalRef.current = setInterval(() => {
-          setFraction(prev => {
-            if (prev >= 1) { clearInterval(intervalRef.current); return 1 }
-            return Math.min(prev + 0.0015, 1)
-          })
-        }, 800)
-      }
-    } catch {
-      setError("Failed to fetch route. Check your VITE_MAPBOX_TOKEN.")
-    } finally {
-      setLoading(false); setRouteLoading(false)
-    }
+  useEffect(() => {
+  if (TRIP_ID) {
+    setTripIdInput(TRIP_ID)
+    handleTrack(TRIP_ID)
   }
+}, [TRIP_ID])
+
+  const handleTrack = async (overrideId) => {
+  const key = (overrideId || tripIdInput).trim().toUpperCase()
+
+  if (!key) {
+    setError("Please enter a Trip ID.")
+    return
+  }
+
+  if (!MOCK_TRIPS[key]) {
+    setError(`No trip found for "${key}". Try TRP-001, TRP-002 or TRP-003`)
+    return
+  }
+
+  setLoading(true)
+  setRouteLoading(true)
+  setError("")
+  setRoutePoints([])
+  setFraction(0)
+  setActiveTripKey(key)
+  setSelectedIssue(null)
+  setIssueNote("")
+  setReportDone(false)
+
+  if (intervalRef.current) clearInterval(intervalRef.current)
+
+  try {
+    const route = await fetchRoadRoute(MOCK_TRIPS[key].waypoints)
+    setRoutePoints(route)
+
+    const init = MOCK_TRIPS[key].progressFraction ?? 0.3
+    setFraction(init)
+
+    if (MOCK_TRIPS[key].status !== "delivered") {
+      intervalRef.current = setInterval(() => {
+        setFraction(prev => {
+          if (prev >= 1) {
+            clearInterval(intervalRef.current)
+            return 1
+          }
+          return Math.min(prev + 0.0015, 1)
+        })
+      }, 800)
+    }
+  } catch {
+    setError("Failed to fetch route. Check your VITE_MAPBOX_TOKEN.")
+  } finally {
+    setLoading(false)
+    setRouteLoading(false)
+  }
+}
+
+  // const handleTrack = async () => {
+  //   const key = tripIdInput.trim().toUpperCase()
+  //   // console.log(key, MOCK_TRIPS[key]);
+
+  //   if (!key) { setError("Please enter a Trip ID."); return }
+  //   if (!MOCK_TRIPS[key]) {
+  //     setError(`No trip found for "${tripIdInput}". Try TRP-001, TRP-002 or TRP-003`); return
+  //   }
+
+  //   setLoading(true); setRouteLoading(true); setError("")
+  //   setRoutePoints([]); setFraction(0); setActiveTripKey(key)
+  //   setSelectedIssue(null); setIssueNote(""); setReportDone(false)
+  //   if (intervalRef.current) clearInterval(intervalRef.current)
+
+  //   try {
+  //     const route = await fetchRoadRoute(MOCK_TRIPS[key].waypoints)
+  //     setRoutePoints(route)
+  //     const init = MOCK_TRIPS[key].progressFraction ?? 0.3
+  //     setFraction(init)
+
+  //     if (MOCK_TRIPS[key].status !== "delivered") {
+  //       intervalRef.current = setInterval(() => {
+  //         setFraction(prev => {
+  //           if (prev >= 1) { clearInterval(intervalRef.current); return 1 }
+  //           return Math.min(prev + 0.0015, 1)
+  //         })
+  //       }, 800)
+  //     }
+  //   } catch {
+  //     setError("Failed to fetch route. Check your VITE_MAPBOX_TOKEN.")
+  //   } finally {
+  //     setLoading(false); setRouteLoading(false)
+  //   }
+  // }
 
   useEffect(() => () => { if (intervalRef.current) clearInterval(intervalRef.current) }, [])
 
@@ -500,7 +563,7 @@ export default function TrackingForm({ MOCK_TRIPS }) {
                   { label: "Experience", value: tripData.driver.experience },
                   { label: "Total trips", value: tripData.driver.trips.toLocaleString() },
                   { label: "Vehicle", value: tripData.driver.vehicle },
-                  { label: "License", value: tripData.driver.license?.slice(0, 14) },
+                  { label: "License", value: tripData.driver.licence?.slice(0, 14) },
                 ].map(({ label, value }) => (
                   <div key={label} className="bg-gray-50 border border-gray-100 rounded-lg p-2.5">
                     <p className="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">{label}</p>

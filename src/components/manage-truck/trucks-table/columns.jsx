@@ -8,6 +8,7 @@ import {
     Wrench,
     SendHorizonal,
     Road,
+    Map,
 } from "lucide-react"
 import {
     DropdownMenu,
@@ -22,7 +23,7 @@ import CreateTripModal from "../../manage-trip/CreateNewTrip"
 import TruckDetailDrawer from "../TruckDetailDrawer"
 import AddTruckModal from "../AddTruckForm"
 import TripDetailSheet from "@/components/manage-trip/TripDetailSheet"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import DeleteModal from "@/components/DeleteModal"
 import { toast } from "sonner"
 
@@ -45,20 +46,23 @@ const statusLabels = {
 }
 
 function ActionsCell({ row, onEditTruck, onDeleteTruck }) {
-    const truck = row.original
+    const truck = row.original;     
+    console.log(truck);
+    
     const [editOpen, setEditOpen] = useState(false)
     const [tripHistory, setTripHistory] = useState(false)
     const [openDispatch, setOpenDispatch] = useState(false)
     const [tripDetailsOpen, setTripDetailsOpen] = useState(false)
     const location = useLocation()
+    const navigate = useNavigate();
 
     const handleDelete = async () => {
         await onDeleteTruck(truck.id)
         toast.success("Truck deleted successfully", {
             description: `${truck.registration_no} has been removed.`,
             style: {
-                    color: "green"
-                }
+                color: "green"
+            }
         })
     }
 
@@ -85,21 +89,39 @@ function ActionsCell({ row, onEditTruck, onDeleteTruck }) {
 
             <TripDetailSheet
                 trip={{
-                    id: "TRP-2840",
+                    id: "TRP-001",
                     brand: "Zudio",
                     truck: truck.registration_no,
-                    driver: "Suresh M.",
+                    driver: "Rajesh Kumar",
+                    phone: "+91 98765 43210",
                     gpsDevice: "GPS-002-PUNE",
-                    sourceDC: "Mumbai Warehouse DC",
+                    sourceDC: "Pune Logistics Hub, Pimpri-Chinchwad",
                     stops: [
-                        { name: "Hinjawadi Store", status: "pending" },
+                        { name: "Phoenix Palladium, Mumbai", status: "pending" },
                     ],
                     stopsCount: 1,
                     status: "in_transit",
-                    departedAt: "Today, 08:15 AM",
-                    eta: "Today, 10:30 AM",
+                    departedAt: "Today, 06:30 AM",
+                    eta: "Today, 11:00 AM",
+                    distance: "147 km",
                     completedAt: null,
                 }}
+                // trip={{
+                //     id: "TRP-2840",
+                //     brand: "Zudio",
+                //     truck: truck.registration_no,
+                //     driver: "Suresh M.",
+                //     gpsDevice: "GPS-002-PUNE",
+                //     sourceDC: "Mumbai Warehouse DC",
+                //     stops: [
+                //         { name: "Hinjawadi Store", status: "pending" },
+                //     ],
+                //     stopsCount: 1,
+                //     status: "in_transit",
+                //     departedAt: "Today, 08:15 AM",
+                //     eta: "Today, 10:30 AM",
+                //     completedAt: null,
+                // }}
                 open={tripDetailsOpen}
                 onClose={setTripDetailsOpen}
             />
@@ -121,10 +143,10 @@ function ActionsCell({ row, onEditTruck, onDeleteTruck }) {
 
                 {location.pathname.startsWith('/admin') && (
                     <>
-                        <Button 
-                            variant="outline" 
-                            size="xs" 
-                            onClick={() => setEditOpen(true)} 
+                        <Button
+                            variant="outline"
+                            size="xs"
+                            onClick={() => setEditOpen(true)}
                             className="hover:bg-maroon cursor-pointer hover:text-white"
                         >
                             <Pencil size={16} />
@@ -145,16 +167,24 @@ function ActionsCell({ row, onEditTruck, onDeleteTruck }) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="bg-white border shadow-md w-46">
                         {truck.status === "in_transit" && (
-                            <DropdownMenuItem onClick={() => setTripDetailsOpen(true)} className="gap-2 text-sm cursor-pointer">
-                                <Road size={14} /> View trip details
-                            </DropdownMenuItem>
+                            <>
+                                <DropdownMenuItem onClick={() => setTripDetailsOpen(true)} className="gap-2 text-sm cursor-pointer">
+                                    <Road size={14} /> View trip details
+                                </DropdownMenuItem>
+
+                                {/* //so this trip id should come in truck data, but for only trucks who are in transit state */}
+                                <DropdownMenuItem 
+                                onClick={() => navigate(`/track?id=TRP-001`)}
+                                className="gap-2 text-sm cursor-pointer">
+                                    <Map size={14} /> View on map
+                                </DropdownMenuItem>
+                            </>
                         )}
+
                         <DropdownMenuItem onClick={() => setTripHistory(true)} className="gap-2 text-sm cursor-pointer">
                             <History size={14} /> View trip history
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="gap-2 text-sm cursor-pointer">
-                            <Wrench size={14} /> Mark as maintenance
-                        </DropdownMenuItem>
+
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
@@ -176,9 +206,9 @@ export const columns = ({ onEditTruck, onDeleteTruck }) => [
                             <Button variant="outline" size="sm" className="h-6 min-w-18 text-[10px]">
                                 {currentValue === "all"
                                     ? "All types"
-                                    : currentValue === "mini_truck" 
-                                    ? "Mini"
-                                    : currentValue.charAt(0).toUpperCase() + currentValue.slice(1)}
+                                    : currentValue === "mini_truck"
+                                        ? "Mini"
+                                        : currentValue.charAt(0).toUpperCase() + currentValue.slice(1)}
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-36 bg-white border shadow-md">
@@ -304,8 +334,8 @@ export const columns = ({ onEditTruck, onDeleteTruck }) => [
     {
         id: "actions",
         cell: ({ row }) => (
-            <ActionsCell 
-                row={row} 
+            <ActionsCell
+                row={row}
                 onEditTruck={onEditTruck}
                 onDeleteTruck={onDeleteTruck}
             />

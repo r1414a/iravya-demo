@@ -32,6 +32,7 @@ import {
     AlertTriangle,
     ExternalLink,
     Wind,
+    Wrench
 } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 import CreateFormSheetTrigger from "../CreateFormSheetTrigger"
@@ -168,15 +169,15 @@ function DocRow({ docKey, doc, onChange }) {
     const normalizedDoc =
         doc instanceof File
             ? {
-                  name: doc.name,
-                  size: `${(doc.size / 1024).toFixed(0)} KB`,
-                  status: "valid",
-                  expiry: null,
-                  url: null,
-              }
+                name: doc.name,
+                size: `${(doc.size / 1024).toFixed(0)} KB`,
+                status: "valid",
+                expiry: null,
+                url: null,
+            }
             : doc && typeof doc === "object"
-            ? doc
-            : null
+                ? doc
+                : null
 
     const cfg = docStatusConfig[normalizedDoc?.status ?? "missing"]
     const displayName = normalizedDoc?.name ?? null
@@ -198,13 +199,12 @@ function DocRow({ docKey, doc, onChange }) {
 
                     {normalizedDoc?.expiry && (
                         <span
-                            className={`text-[8px] sm:text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${
-                                normalizedDoc.status === "expiring"
+                            className={`text-[8px] sm:text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${normalizedDoc.status === "expiring"
                                     ? "bg-amber-100 text-amber-700"
                                     : normalizedDoc.status === "expired"
-                                    ? "bg-red-100 text-red-600"
-                                    : "bg-green-100 text-green-700"
-                            }`}
+                                        ? "bg-red-100 text-red-600"
+                                        : "bg-green-100 text-green-700"
+                                }`}
                         >
                             {normalizedDoc.status === "expiring" ? "⚠ " : ""}
                             Exp {normalizedDoc.expiry}
@@ -279,23 +279,23 @@ export default function AddTruckModal({
         return {
             registration_cert: truckData?.registration_cert
                 ? createExistingDocObject(
-                      truckData.registration_cert,
-                      truckData.rc_expiry
-                  )
+                    truckData.registration_cert,
+                    truckData.rc_expiry
+                )
                 : mockDocs.registration_cert,
 
             insurance_doc: truckData?.insurance_doc
                 ? createExistingDocObject(
-                      truckData.insurance_doc,
-                      truckData.insurance_expiry
-                  )
+                    truckData.insurance_doc,
+                    truckData.insurance_expiry
+                )
                 : mockDocs.insurance_doc,
 
             PUC_cert: truckData?.PUC_cert
                 ? createExistingDocObject(
-                      truckData.PUC_cert,
-                      truckData.puc_expiry
-                  )
+                    truckData.PUC_cert,
+                    truckData.puc_expiry
+                )
                 : mockDocs.PUC_cert,
         }
     }
@@ -317,6 +317,8 @@ export default function AddTruckModal({
             rc_expiry: truck?.rc_expiry || "",
             insurance_expiry: truck?.insurance_expiry || "",
             puc_expiry: truck?.puc_expiry || "",
+            status: truck?.status || "idle",
+            isMaintenance: truck?.status === "maintenance"
         },
     })
 
@@ -324,6 +326,7 @@ export default function AddTruckModal({
     const rcExpiry = watch("rc_expiry")
     const insuranceExpiry = watch("insurance_expiry")
     const pucExpiry = watch("puc_expiry")
+    const isMaintenance = watch("isMaintenance")
 
     // ── Reset form + docs whenever truck or open changes ─────────────────
     useEffect(() => {
@@ -334,6 +337,8 @@ export default function AddTruckModal({
             model: truck?.model || "",
             type: truck?.type || "",
             capacity: truck?.capacity || "",
+            status: truck?.status || "",
+            isMaintenance: truck?.status === "maintenance",
             rc_expiry:
                 truck?.rc_expiry || truck?.registration_cert?.rawExpiry || "",
             insurance_expiry:
@@ -343,33 +348,42 @@ export default function AddTruckModal({
         })
     }, [truck, open, reset])
 
+
+    useEffect(() => {
+        if (isMaintenance) {
+            setValue("status", "maintenance")
+        } else if (truck?.status === "maintenance") {
+            setValue("status", "idle")
+        }
+    }, [isMaintenance])
+
     // ── Update doc expiry/status live ────────────────────────────────────
     useEffect(() => {
         setDocs((prev) => ({
             ...prev,
             registration_cert: prev.registration_cert
                 ? {
-                      ...prev.registration_cert,
-                      expiry: formatDisplayExpiry(rcExpiry),
-                      rawExpiry: rcExpiry,
-                      status: getDocStatus(rcExpiry),
-                  }
+                    ...prev.registration_cert,
+                    expiry: formatDisplayExpiry(rcExpiry),
+                    rawExpiry: rcExpiry,
+                    status: getDocStatus(rcExpiry),
+                }
                 : prev.registration_cert,
             insurance_doc: prev.insurance_doc
                 ? {
-                      ...prev.insurance_doc,
-                      expiry: formatDisplayExpiry(insuranceExpiry),
-                      rawExpiry: insuranceExpiry,
-                      status: getDocStatus(insuranceExpiry),
-                  }
+                    ...prev.insurance_doc,
+                    expiry: formatDisplayExpiry(insuranceExpiry),
+                    rawExpiry: insuranceExpiry,
+                    status: getDocStatus(insuranceExpiry),
+                }
                 : prev.insurance_doc,
             PUC_cert: prev.PUC_cert
                 ? {
-                      ...prev.PUC_cert,
-                      expiry: formatDisplayExpiry(pucExpiry),
-                      rawExpiry: pucExpiry,
-                      status: getDocStatus(pucExpiry),
-                  }
+                    ...prev.PUC_cert,
+                    expiry: formatDisplayExpiry(pucExpiry),
+                    rawExpiry: pucExpiry,
+                    status: getDocStatus(pucExpiry),
+                }
                 : prev.PUC_cert,
         }))
     }, [rcExpiry, insuranceExpiry, pucExpiry])
@@ -393,6 +407,7 @@ export default function AddTruckModal({
                     rc_expiry: data.rc_expiry || "",
                     insurance_expiry: data.insurance_expiry || "",
                     puc_expiry: data.puc_expiry || "",
+                    status: data.isMaintenance ? "maintenance" : "idle",
                     registration_cert: docs.registration_cert,
                     insurance_doc: docs.insurance_doc,
                     PUC_cert: docs.PUC_cert,
@@ -403,8 +418,8 @@ export default function AddTruckModal({
                 toast.success("Truck updated successfully", {
                     description: `${updatedTruck.registration_no} has been updated.`,
                     style: {
-                    color: "green"
-                }
+                        color: "green"
+                    }
                 })
             } else {
                 const newTruck = {
@@ -433,8 +448,8 @@ export default function AddTruckModal({
                 toast.success("Truck added successfully", {
                     description: `${newTruck.registration_no} has been created.`,
                     style: {
-                    color: "green"
-                }
+                        color: "green"
+                    }
                 })
 
                 reset({
@@ -551,19 +566,7 @@ export default function AddTruckModal({
                                         </Field>
                                     </div>
 
-                                    {truck && (
-                                        <FieldGroup>
-                                            <Field orientation="horizontal">
-                                                <Checkbox
-                                                    id="maintenance-checkbox"
-                                                    name="maintenance-checkbox"
-                                                />
-                                                <FieldLabel htmlFor="maintenance-checkbox">
-                                                    Mark as maintenance
-                                                </FieldLabel>
-                                            </Field>
-                                        </FieldGroup>
-                                    )}
+
 
                                     {/* ── Documents Section ───────────────── */}
                                     <div className="pt-2">
@@ -585,11 +588,11 @@ export default function AddTruckModal({
                                                         d?.status
                                                     )
                                             ) && (
-                                                <span className="flex items-center gap-1 text-[11px] text-amber-600 font-medium">
-                                                    <AlertTriangle size={11} />
-                                                    Action needed
-                                                </span>
-                                            )}
+                                                    <span className="flex items-center gap-1 text-[11px] text-amber-600 font-medium">
+                                                        <AlertTriangle size={11} />
+                                                        Action needed
+                                                    </span>
+                                                )}
                                         </div>
 
                                         <div className="flex flex-col gap-3">
@@ -671,6 +674,26 @@ export default function AddTruckModal({
                                             </div>
                                         </div>
                                     </div>
+
+
+                                    {truck && (
+                                        <FieldGroup>
+                                            <Field orientation="horizontal">
+                                                <Checkbox
+                                                    id="maintenance-checkbox"
+                                                    checked={isMaintenance}
+                                                    onCheckedChange={(val) => setValue("isMaintenance", !!val)}
+                                                    className="border border-gray-500"
+                                                />
+                                                <FieldLabel
+                                                    htmlFor="maintenance-checkbox"
+                                                    className="font-bold"
+                                                >
+                                                    Mark as maintenance <Wrench size={14} />
+                                                </FieldLabel>
+                                            </Field>
+                                        </FieldGroup>
+                                    )}
                                 </FieldGroup>
                             </FieldSet>
                         </FieldGroup>

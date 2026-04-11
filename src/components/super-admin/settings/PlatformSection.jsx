@@ -29,7 +29,7 @@ export function PlatformSection() {
 const { platformSettings } = useSelector(selectUser)
 
 const [settings, setSettings] = useState(platformSettings)
-console.log(settings);
+// console.log(settings);
 
 
 const handleChange = (key, value) => {

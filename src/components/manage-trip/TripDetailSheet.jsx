@@ -70,11 +70,19 @@ export default function TripDetailSheet({ trip, open, onClose }) {
             </div>
           </div>
 
+            <div className="grid grid-cols-3 gap-4">
           {/* Source */}
-          <div>
+          <div className="col-span-2">
             <p className="text-xs text-gray-500 mb-1">Source DC</p>
             <p className="font-medium text-xs sm:text-sm">{trip.sourceDC}</p>
           </div>
+
+{/* Distance */}
+          <div>
+              <p className="text-xs text-gray-500">Distance</p>
+              <p className="text-xs sm:text-sm">{trip.distance}</p>
+            </div>
+            </div>
 
           {/* Stops */}
           <div>
@@ -121,6 +129,7 @@ export default function TripDetailSheet({ trip, open, onClose }) {
               </p>
               <p className="text-xs sm:text-sm">{trip.completedAt || trip.eta || "—"}</p>
             </div>
+            
           </div>
         </div>
       </SheetContent>

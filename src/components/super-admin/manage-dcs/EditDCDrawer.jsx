@@ -32,7 +32,7 @@
 
     export default function EditDCDrawer({ dc, open, onClose }) {
         if (!dc) return null
-    console.log(dc);
+    // console.log(dc);
 
         const {dc_name, city,} = dc
     

@@ -7,6 +7,7 @@ export const MOCK_TRIPS = {
       avatar: "RK",
       rating: 4.8,
       trips: 1240,
+      licence: "MH1220190012345",
       experience: "8 years",
       vehicle: "Heavy Freight",
     },
