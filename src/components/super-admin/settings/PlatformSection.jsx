@@ -6,6 +6,11 @@ import {
     SelectItem, SelectLabel, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import { Radio, Cpu, ShieldCheck, Siren } from "lucide-react"
+import { useDispatch, useSelector } from "react-redux"
+import { selectUser, updatePlatformSettings } from "@/lib/features/auth/authSlice"
+import { useState } from "react"
+import { toast } from "sonner"
+
 
 function SectionBlock({ icon: Icon, title, children }) {
     return (
@@ -20,6 +25,27 @@ function SectionBlock({ icon: Icon, title, children }) {
 }
 
 export function PlatformSection() {
+    const dispatch = useDispatch()
+const { platformSettings } = useSelector(selectUser)
+
+const [settings, setSettings] = useState(platformSettings)
+console.log(settings);
+
+
+const handleChange = (key, value) => {
+    
+    setSettings(prev => ({ ...prev, [key]: value }))
+}
+
+const handleSave = () => {
+    dispatch(updatePlatformSettings(settings))
+
+    toast.success("Platform settings updated",{
+        style: {
+            color: 'green'
+        }
+    })
+}
     return (
         <div>
             <div className="mb-6">
@@ -33,16 +59,28 @@ export function PlatformSection() {
                     <div className="flex gap-3">
                         <Field>
                             <FieldLabel>Broker host</FieldLabel>
-                            <Input defaultValue="mqtt.fleettrack.in" className="font-mono placeholder:text-sm text-sm sm:text-md" placeholder="mqtt.yourdomain.com"/>
+                            <Input 
+                                value={settings.mqtt_host}
+                                onChange={(e) => handleChange("mqtt_host", e.target.value)}
+                                className="font-mono placeholder:text-sm text-sm sm:text-md" placeholder="mqtt.yourdomain.com"/>
                         </Field>
                         <Field>
                             <FieldLabel>Port</FieldLabel>
-                            <Input defaultValue="8883" className="font-mono placeholder:text-sm text-sm sm:text-md" placeholder="8883" />
+                            <Input 
+                                value={settings.port}
+                                onChange={(e) => handleChange("port", e.target.value)} 
+                                className="font-mono placeholder:text-sm text-sm sm:text-md" 
+                                placeholder="8883" 
+                            />
                         </Field>
                     </div>
                     <Field>
                         <FieldLabel>Topic prefix</FieldLabel>
-                        <Input defaultValue="trucks" className="font-mono placeholder:text-sm text-sm sm:text-md" placeholder="trucks" />
+                        <Input 
+                            value={settings.topic_prefix}
+                            onChange={(e) => handleChange("topic_prefix", e.target.value)}
+                            className="font-mono placeholder:text-sm text-sm sm:text-md" 
+                            placeholder="trucks" />
                         <FieldDescription className="text-xs">
                             Devices publish to <span className="font-mono bg-gray-100 px-1 rounded text-xs">{"prefix/{deviceId}/location"}</span>
                         </FieldDescription>
@@ -56,16 +94,26 @@ export function PlatformSection() {
                     <div className="flex gap-3">
                         <Field>
                             <FieldLabel>Ping interval (seconds)</FieldLabel>
-                            <Input type="number" defaultValue="10" min="5" max="60" className="mt-4 sm:mt-0 placeholder:text-sm text-sm sm:text-md" />
+                            <Input 
+                                type="number" 
+                                value={settings.ping_interval} 
+                                onChange={(e) => handleChange("ping_interval", e.target.value)}
+                                min="5" 
+                                max="60" 
+                                className="mt-4 sm:mt-0 placeholder:text-sm text-sm sm:text-md" />
                             <FieldDescription className="text-xs">Lower = more accurate, higher data cost</FieldDescription>
                         </Field>
                         <Field>
                             <FieldLabel>Offline threshold (minutes)</FieldLabel>
-                            <Input type="number" defaultValue="2" min="1" max="10" className="placeholder:text-sm text-sm sm:text-md" />
+                            <Input 
+                                type="number" 
+                                value={settings.offline_threshold}
+                                onChange={(e) => handleChange("offline_threshold", e.target.value)}
+                                min="1" max="10" className="placeholder:text-sm text-sm sm:text-md" />
                             <FieldDescription className="text-xs">Marked offline if no ping in this window</FieldDescription>
                         </Field>
                     </div>
-                    <Field>
+                    {/* <Field>
                         <FieldLabel>GPS data retention</FieldLabel>
                         <Select defaultValue="12">
                             <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
@@ -80,7 +128,7 @@ export function PlatformSection() {
                             </SelectContent>
                         </Select>
                         <FieldDescription className="text-xs">Raw GPS points older than this are compressed and archived automatically</FieldDescription>
-                    </Field>
+                    </Field> */}
                 </FieldGroup></FieldSet></FieldGroup>
             </SectionBlock>
 
@@ -90,11 +138,15 @@ export function PlatformSection() {
                     <div className="flex gap-3">
                         <Field>
                             <FieldLabel>Default store radius (m)</FieldLabel>
-                            <Input type="number" defaultValue="200" className="mt-4 sm:mt-0 placeholder:text-sm text-sm sm:text-md"/>
+                            <Input 
+                                type="number" 
+                                value={settings.store_radius}
+                                onChange={(e) => handleChange("store_radius", e.target.value)}
+                                min="200" max="500" className="mt-4 sm:mt-0 placeholder:text-sm text-sm sm:text-md"/>
                         </Field>
                         <Field>
                         <FieldLabel>Near-arrival notification (km before store)</FieldLabel>
-                        <Input type="number" defaultValue="5" min="1" max="20" />
+                        <Input type="number" value={settings.near_arrival} onChange={(e) => handleChange("near_arrival", e.target.value)}  min="5" max="10" />
                         <FieldDescription className="text-xs">Store manager gets a push notification when truck is within this distance</FieldDescription>
                     </Field>
                         {/* <Field>
@@ -112,25 +164,25 @@ export function PlatformSection() {
                     <div className="flex gap-3">
                         <Field>
                             <FieldLabel>Speeding threshold (km/h)</FieldLabel>
-                            <Input type="number" defaultValue="80" className="placeholder:text-sm text-sm sm:text-md"/>
+                            <Input type="number" value={settings.speed_limit} onChange={(e) => handleChange("speed_limit", e.target.value)} className="placeholder:text-sm text-sm sm:text-md"/>
                             <FieldDescription className="text-xs">Alert fires when truck exceeds this speed</FieldDescription>
                         </Field>
                         <Field>
                             <FieldLabel>Long stop threshold (minutes)</FieldLabel>
-                            <Input type="number" defaultValue="15" className="placeholder:text-sm text-sm sm:text-md"/>
+                            <Input type="number" value={settings.long_stop} onChange={(e) => handleChange("long_stop", e.target.value)} className="placeholder:text-sm text-sm sm:text-md"/>
                             <FieldDescription className="text-xs">Alert fires when truck is idle this long on a trip</FieldDescription>
                         </Field>
                     </div>
-                    <Field>
+                    {/* <Field>
                         <FieldLabel>Device at store — pickup reminder (hours)</FieldLabel>
                         <Input type="number" defaultValue="24" className="placeholder:text-sm text-sm sm:text-md"/>
                         <FieldDescription className="text-xs">Notify DC operator if a device sits at a store uncollected beyond this duration</FieldDescription>
-                    </Field>
+                    </Field> */}
                 </FieldGroup></FieldSet></FieldGroup>
             </SectionBlock>
 
             <div className="mt-6">
-                <Button className="bg-maroon hover:bg-maroon-dark text-white">Save platform settings</Button>
+                <Button onClick={handleSave} className="bg-maroon hover:bg-maroon-dark text-white">Save platform settings</Button>
             </div>
         </div>
     )

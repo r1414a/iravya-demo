@@ -1,3 +1,4 @@
+// alert-table/data-table.jsx
 import {
     flexRender,
     getCoreRowModel,
@@ -11,76 +12,108 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
- 
-export function DataTable({ columns, data }) {
+import { toast } from "sonner"
+
+export function DataTable({ columns, data, allAlerts, onMarkAllAsRead }) {
     const [columnFilters, setColumnFilters] = useState([])
- 
+
     const table = useReactTable({
         data,
         columns,
+        state: {
+            columnFilters,
+        },
+        onColumnFiltersChange: setColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        state: { columnFilters },
-        onColumnFiltersChange: setColumnFilters,
-        initialState: { pagination: { pageSize: 10 } },
+        initialState: {
+            pagination: {
+                pageSize: 10,
+            },
+        },
     })
- 
+
+    const handleMarkAllRead = () => {
+        onMarkAllAsRead()
+        toast.success("All alerts marked as read", {
+            style: {
+                color: 'green'
+            }
+        })
+    }
+
+    const unreadCount = allAlerts.filter(a => !a.isRead).length
+
     return (
         <div className="border rounded-lg">
-            {/* Mark all read toolbar */}
             <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50">
                 <p className="text-xs text-gray-500">
                     <span className="font-semibold text-maroon">
-                        {data.filter(a => !a.isRead).length}
-                    </span> unread · {data.length} total
+                        {unreadCount}
+                    </span> unread · {allAlerts.length} total
                 </p>
                 <Button
                     variant="outline"
                     size="sm"
-                    className="text-xs h-7 text-maroon border-maroon/30 hover:bg-maroon/5"
+                    onClick={handleMarkAllRead}
+                    disabled={unreadCount === 0}
+                    className="text-xs h-7 text-maroon border-maroon/30 hover:bg-maroon/5 disabled:opacity-50"
                 >
                     Mark all as read
                 </Button>
             </div>
- 
+
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((hg) => (
                         <TableRow key={hg.id}>
                             {hg.headers.map((header) => (
                                 <TableHead key={header.id} className="font-bold">
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}
                         </TableRow>
                     ))}
                 </TableHeader>
- 
+
                 <TableBody>
-                    {table.getRowModel().rows.map((row) => {
-                        const isUnread = !row.original.isRead
-                        return (
-                            <TableRow
-                                key={row.id}
-                                // onClick={() => onRowClick?.(row.original)}
-                                className={`hover:bg-muted cursor-pointer ${isUnread ? "bg-red-50/40" : ""}`}
+                    {table.getRowModel().rows.length ? (
+                        table.getRowModel().rows.map((row) => {
+                            const isUnread = !row.original.isRead
+                            return (
+                                <TableRow
+                                    key={row.id}
+                                    className={`hover:bg-muted ${isUnread ? "bg-red-50/40" : ""}`}
+                                >
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            )
+                        })
+                    ) : (
+                        <TableRow>
+                            <TableCell
+                                colSpan={columns.length}
+                                className="text-center py-6 text-gray-500"
                             >
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        )
-                    })}
+                                No alerts found
+                            </TableCell>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
- 
-            <div className="flex items-center justify-between px-4 py-3">
+
+            <div className="flex items-center justify-between px-4 py-3 border-t">
                 <div className="text-sm text-black font-semibold">
                     Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                 </div>
+                
                 <div className="flex gap-2">
                     <Button
                         onClick={() => table.previousPage()}
@@ -89,6 +122,7 @@ export function DataTable({ columns, data }) {
                     >
                         Previous
                     </Button>
+                    
                     <Button
                         onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage()}

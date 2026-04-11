@@ -21,7 +21,9 @@ import { ROLES } from "@/constants/constant"
 import { showSuccessToast } from "@/lib/utils/showSuccessToast"
 
 export default function Header() {
-  const { user } = useSelector(selectUser)
+  const { user, notifications } = useSelector(selectUser)
+  console.log(user, notifications);
+  
   const dispatch = useDispatch()
   const navigate = useNavigate()
 

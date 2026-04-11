@@ -1,5 +1,9 @@
 import { Button } from "@/components/ui/button"
+import { selectUser, setNotificationPreferences } from "@/lib/features/auth/authSlice"
 import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { toast } from "sonner"
+
  
 const NOTIFICATION_GROUPS = [
     {
@@ -23,7 +27,7 @@ const NOTIFICATION_GROUPS = [
         group: "Devices",
         items: [
             { key: "device_offline",  label: "Device offline",   desc: "When a GPS device stops sending pings"             },
-            { key: "device_at_store", label: "Device at store",  desc: "Device at store uncollected for more than 24h"     },
+            // { key: "device_at_store", label: "Device at store",  desc: "Device at store uncollected for more than 24h"     },
             { key: "device_low_batt", label: "Low battery",      desc: "Device battery drops below 20%"                   },
         ],
     },
@@ -54,9 +58,30 @@ function ToggleRow({ label, desc, checked, onChange }) {
 }
  
 export function NotificationsSection() {
-    const init = NOTIFICATION_GROUPS.flatMap(g => g.items).reduce((a, i) => ({ ...a, [i.key]: true }), {})
-    const [prefs, setPrefs] = useState(init)
-    const toggle = (key, val) => setPrefs(p => ({ ...p, [key]: val }))
+    const dispatch = useDispatch()
+const { notifications } = useSelector(selectUser)
+
+const init = NOTIFICATION_GROUPS
+  .flatMap(g => g.items)
+  .reduce((a, i) => ({ ...a, [i.key]: true }), {})
+  
+
+const [prefs, setPrefs] = useState(notifications || init)
+
+const toggle = (key, val) => setPrefs(p => ({ ...p, [key]: val }))
+
+const handleSave = () => {
+    dispatch(setNotificationPreferences(prefs))
+
+    toast.success("Preferences saved", {
+        description: "Notification settings updated",
+        style: {
+                color: 'green'
+            }
+    })
+}
+    // const init = NOTIFICATION_GROUPS.flatMap(g => g.items).reduce((a, i) => ({ ...a, [i.key]: true }), {})
+    // const [prefs, setPrefs] = useState(init)
  
     return (
         <div>
@@ -86,7 +111,7 @@ export function NotificationsSection() {
             </div>
  
             <div className="mt-6">
-                <Button className="bg-maroon hover:bg-maroon-dark text-white">Save preferences</Button>
+                <Button onClick={handleSave} className="bg-maroon hover:bg-maroon-dark text-white">Save preferences</Button>
             </div>
         </div>
     )

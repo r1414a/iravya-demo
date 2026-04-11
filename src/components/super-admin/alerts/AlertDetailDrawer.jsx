@@ -1,3 +1,4 @@
+// AlertDetailDrawer.jsx (Updated)
 import {
     Sheet,
     SheetContent,
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button"
 import {
     Truck, MapPin, Clock, CheckCheck,
     Zap, Navigation, Radio, BatteryLow,
-    Building2, User, ChevronRight,
+    Building2, User,
 } from "lucide-react"
 
 const TYPE_CONFIG = {
@@ -29,7 +30,6 @@ const SEVERITY_STYLES = {
     info: "bg-blue-100 text-blue-600",
 }
 
-// Mock timeline — what happened before and after the alert
 const mockTimeline = [
     { label: "Trip dispatched", time: "Today, 08:45 AM", done: true },
     { label: "Alert triggered", time: "Today, 10:42 AM", done: true, isAlert: true },
@@ -37,7 +37,7 @@ const mockTimeline = [
     { label: "Trip completed", time: "—", done: false },
 ]
 
-export default function AlertDetailDrawer({ alert, open, onClose }) {
+export default function AlertDetailDrawer({ alert, open, onClose, onToggleRead }) {
     if (!alert) return null
 
     const cfg = TYPE_CONFIG[alert.type] ?? TYPE_CONFIG.speeding
@@ -46,12 +46,8 @@ export default function AlertDetailDrawer({ alert, open, onClose }) {
     return (
         <Sheet open={open} onOpenChange={onClose}>
             <SheetContent className="w-full sm:max-w-md lg:max-w-lg bg-white p-0 flex flex-col">
-
-                {/* ── Header — same pattern as DCDetailDrawer ── */}
                 <SheetHeader className="px-4 sm:px-6 pt-5 sm:pt-6 pb-4 border-b">
                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-
-                        {/* Left */}
                         <div className="flex items-start gap-3 min-w-0">
                             <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${cfg.bg} flex items-center justify-center shrink-0 mt-0.5`}>
                                 <Icon size={16} className={cfg.color} />
@@ -67,7 +63,6 @@ export default function AlertDetailDrawer({ alert, open, onClose }) {
                             </div>
                         </div>
 
-                        {/* Right */}
                         <div className="flex items-center sm:items-end gap-2 flex-wrap">
                             <Badge className={`${SEVERITY_STYLES[alert.severity]} border-0 text-[10px] sm:text-xs font-medium capitalize whitespace-nowrap`}>
                                 {alert.severity}
@@ -81,15 +76,14 @@ export default function AlertDetailDrawer({ alert, open, onClose }) {
                         </div>
                     </div>
 
-                    {/* Description */}
                     <p className="text-xs sm:text-sm text-gray-700 mt-3 leading-snug wrap-break-words">
                         {alert.description}
                     </p>
 
-                    {/* Action */}
                     <Button
                         size="sm"
                         variant="outline"
+                        onClick={onToggleRead}
                         className="mt-3 w-full sm:w-fit flex items-center justify-center gap-2 text-maroon border-maroon/30 hover:bg-maroon/5"
                     >
                         <CheckCheck size={14} />
@@ -97,8 +91,7 @@ export default function AlertDetailDrawer({ alert, open, onClose }) {
                     </Button>
                 </SheetHeader>
 
-                <div className="flex-1 overflow-y-auto px-3 pb- sm:p-4">
-                    {/* ── Details grid — same 2-col bg-gray-50 border-gray-100 rounded-lg style ── */}
+                <div className="flex-1 overflow-y-auto px-3 pb-3 sm:p-4">
                     <div className="border-b pb-4">
                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                             Alert details
@@ -125,7 +118,6 @@ export default function AlertDetailDrawer({ alert, open, onClose }) {
                         </div>
                     </div>
 
-                    {/* ── Trip timeline — same CheckCircle2 / circle pattern as TripDetailSheet ── */}
                     <div className="py-4">
                         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
                             Trip timeline
@@ -134,31 +126,30 @@ export default function AlertDetailDrawer({ alert, open, onClose }) {
                         <div className="flex flex-col">
                             {mockTimeline.map((step, i) => (
                                 <div key={i} className="flex gap-3">
-
-                                    {/* Dot + line */}
                                     <div className="flex flex-col items-center">
                                         <div
-                                            className={`w-3 h-3 rounded-full mt-1 shrink-0 border-2 ${step.isAlert
+                                            className={`w-3 h-3 rounded-full mt-1 shrink-0 border-2 ${
+                                                step.isAlert
                                                     ? "border-red-500 bg-red-500"
                                                     : step.done
                                                         ? "border-green-500 bg-green-500"
                                                         : "border-gray-300 bg-white"
-                                                }`}
+                                            }`}
                                         />
                                         {i < mockTimeline.length - 1 && (
                                             <div className="w-px flex-1 bg-gray-200 my-1" />
                                         )}
                                     </div>
 
-                                    {/* Content */}
                                     <div className="pb-4 min-w-0">
                                         <p
-                                            className={`text-xs sm:text-sm font-medium truncate ${step.isAlert
+                                            className={`text-xs sm:text-sm font-medium truncate ${
+                                                step.isAlert
                                                     ? "text-red-600"
                                                     : step.done
                                                         ? "text-gray-800"
                                                         : "text-gray-400"
-                                                }`}
+                                            }`}
                                         >
                                             {step.label}
                                         </p>
@@ -171,10 +162,7 @@ export default function AlertDetailDrawer({ alert, open, onClose }) {
                             ))}
                         </div>
                     </div>
-
-
                 </div>
-
             </SheetContent>
         </Sheet>
     )
