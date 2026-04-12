@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import {lazy} from "react";
 import ProtectedRoute from "./ProtectedRoute";
 import { ROLES } from "./constants/constant";
-import Analytics from "./pages/super-admin/analytics/Analytics";
+
 
 const Auth = lazy(() => import("./pages/auth/Auth"))
 
@@ -38,6 +38,8 @@ const TrackTrip = lazy(() => import("./pages/track-trip/TrackTrip"))
 const DriverDashboard = lazy(() => import("./pages/driver/DriverDashboard"))
 
 
+const Analytics = lazy(() => import("@/pages/super-admin/analytics/Analytics"))
+const DCLiveMap = lazy(() => import("@/pages/dc-operator/live-track/DCLiveMap"))
 
 
 
@@ -150,6 +152,10 @@ const router = createBrowserRouter([
                     {
                         path: 'manage-stores',
                         element: <DCManageStores />
+                    },
+                    {
+                        path: 'track',
+                        element: <DCLiveMap/>
                     }
                 ]
             }

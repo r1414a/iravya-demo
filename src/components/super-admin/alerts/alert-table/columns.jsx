@@ -22,6 +22,7 @@ import {
 import { useState } from "react"
 import AlertDetailDrawer from "../AlertDetailDrawer"
 import { toast } from "sonner"
+import { useNavigate } from "react-router-dom"
 
 const TYPE_CONFIG = {
     speeding: { label: "Speeding", icon: Zap, color: "text-red-500", bg: "bg-red-50" },
@@ -46,6 +47,7 @@ const TYPES = Object.keys(TYPE_CONFIG)
 function ActionsCell({ row, onMarkAsRead, onMarkAsUnread, onDeleteAlert }) {
     const alert = row.original
     const [viewDetails, setViewDetails] = useState(false)
+    const navigate = useNavigate();
 
     const handleDelete = async () => {
         await onDeleteAlert(alert.id)
@@ -97,6 +99,7 @@ function ActionsCell({ row, onMarkAsRead, onMarkAsUnread, onDeleteAlert }) {
                 <Button 
                     variant="outline" 
                     size="xs" 
+                    onClick={() => navigate(`/track?id=TRP-001`)}
                     className="hover:bg-maroon cursor-pointer text-maroon hover:text-white"
                 >
                     <Route size={16} />

@@ -1,4 +1,4 @@
-import { BookUser, Building2, ChartNoAxesCombined, LocateFixed, Road, Settings, Siren, Store, Truck, Warehouse } from "lucide-react";
+import { BookUser, Building2, ChartNoAxesCombined, LocateFixed, Map, Road, Settings, Siren, Store, Truck, Warehouse } from "lucide-react";
 
 
 export const SUPER_ADMIN_TASKS = [
@@ -21,4 +21,5 @@ export const DC_TASKS = [
   { key: "drivers", label: "Drivers", icon: <BookUser size={35} color="white"strokeWidth={1}/>, bg:  "bg-amber-700 shadow-lg shadow-amber-700/40", path: "/dc/manage-drivers" },
   { key: "trucks", label: "Trucks", icon: <Truck size={35} color="white"strokeWidth={1}/>, bg: "bg-violet-600 shadow-lg shadow-violet-600/40", path: "/dc/manage-trucks" },
   { key: "devices", label: "GPS Devices", icon: <LocateFixed size={35} color="white"strokeWidth={1}/>, bg: "bg-teal-700 shadow-lg shadow-teal-700/40", path: "/dc/manage-gps-devices" },
+   { key: "track", label: "Track all trips", icon: <Map size={35} color="white"strokeWidth={1}/>, bg: "bg-teal-700 shadow-lg shadow-teal-700/40", path: "/dc/track" },
 ];

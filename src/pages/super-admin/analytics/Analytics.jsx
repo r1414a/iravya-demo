@@ -12,10 +12,7 @@ import {
     ResponsiveContainer,
     AreaChart, Area,
     BarChart, Bar,
-    LineChart, Line,
-    PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-    RadialBarChart, RadialBar,
 } from "recharts"
 import AdminSubHeader from "@/components/AdminSubHeader"
 import { useState } from "react"
@@ -59,12 +56,7 @@ const TRIPS_MONTHLY = [
     { month: "Jan",  completed: 445, cancelled: 21, scheduled: 72 },
 ]
 
-const BRAND_TRIPS = [
-    { brand: "Westside", trips: 421, stores: 4, dcs: 2 },
-    { brand: "Zudio",    trips: 583, stores: 4, dcs: 2 },
-    { brand: "Tanishq",  trips: 198, stores: 2, dcs: 1 },
-    { brand: "Tata Cliq",trips: 267, stores: 2, dcs: 1 },
-]
+
 
 const ALERT_TYPES = [
     { name: "Speeding",        value: 84,  color: C.red    },
@@ -75,25 +67,6 @@ const ALERT_TYPES = [
     { name: "Low battery",     value: 38,  color: C.cyan   },
 ]
 
-const DRIVER_PERFORMANCE = [
-    { name: "Ramesh Kumar",   trips: 42, onTime: 39, rating: 4.8, alerts: 2  },
-    { name: "Anil Deshmukh",  trips: 38, onTime: 38, rating: 4.9, alerts: 0  },
-    { name: "Vijay Salunkhe", trips: 31, onTime: 28, rating: 4.5, alerts: 5  },
-    { name: "Prakash Thorat", trips: 29, onTime: 27, rating: 4.7, alerts: 3  },
-    { name: "Mohan Waghmare", trips: 26, onTime: 22, rating: 4.2, alerts: 8  },
-]
-
-const FLEET_STATUS = [
-    { name: "On trip",    value: 4,  color: C.sky    },
-    { name: "Idle",       value: 4,  color: C.green  },
-    { name: "Maintenance",value: 0,  color: C.amber  },
-]
-
-const GPS_HEALTH = [
-    { name: "Online",  value: 4, color: C.green  },
-    { name: "Offline", value: 0, color: C.red    },
-    { name: "At DC",   value: 4, color: C.slate  },
-]
 
 const DELIVERY_RATE_TREND = [
     { week: "W1", rate: 91 }, { week: "W2", rate: 94 },
@@ -102,13 +75,24 @@ const DELIVERY_RATE_TREND = [
     { week: "W7", rate: 95 }, { week: "W8", rate: 98 },
 ]
 
+const DELIVERY_RATE_MONTHLY = [
+    { month: "Jun", rate: 92 },
+    { month: "Jul", rate: 94 },
+    { month: "Aug", rate: 91 },
+    { month: "Sep", rate: 95 },
+    { month: "Oct", rate: 96 },
+    { month: "Nov", rate: 93 },
+    { month: "Dec", rate: 97 },
+    { month: "Jan", rate: 98 },
+]
+
 const DC_ACTIVITY = [
-    { dc: "Westside Pune",  dispatched: 124, completed: 119 },
-    { dc: "Westside Mum",   dispatched:  87, completed:  84 },
-    { dc: "Zudio Pune",     dispatched: 163, completed: 154 },
-    { dc: "Zudio Nashik",   dispatched:  71, completed:  68 },
-    { dc: "Tanishq Pune",   dispatched:  58, completed:  57 },
-    { dc: "Cliq Navi Mum",  dispatched:  76, completed:  71 },
+    { dc: "Pune DC",  dispatched: 124, completed: 119 },
+    { dc: "Mumbai DC",   dispatched:  87, completed:  84 },
+    { dc: "Nashik DC",     dispatched: 163, completed: 154 },
+    { dc: "Kolhapur DC",   dispatched:  71, completed:  68 },
+    { dc: "Nagpur DC",   dispatched:  58, completed:  57 },
+    { dc: "Amravati DC",  dispatched:  76, completed:  71 },
 ]
 
 const TOP_STORES = [
@@ -122,36 +106,36 @@ const TOP_STORES = [
 
 // ── Summary KPIs ─────────────────────────────────────────────────────────────
 const STATS = [
-    { label: "Total trips",       value: "1,469", sub: "+12% vs last month", trend: "up",   icon: Route,        color: "bg-slate-800",   iconBg: "bg-slate-700"  },
-    { label: "Active right now",  value: "4",     sub: "trucks in transit",  trend: "flat", icon: Truck,        color: "bg-sky-700",     iconBg: "bg-sky-600"    },
-    { label: "Delivery rate",     value: "96.4%", sub: "+2.1% vs last month",trend: "up",   icon: CheckCircle2, color: "bg-green-700",   iconBg: "bg-green-600"  },
-    { label: "Avg trip time",     value: "2h 18m",sub: "-4min vs last month",trend: "up",   icon: Clock,        color: "bg-violet-700",  iconBg: "bg-violet-600" },
+    { label: "Total trips",       value: "1,469", sub: "+12% vs last month", trend: "up",   icon: Route,        color: "border-t-slate-800",   iconBg: "bg-slate-700"  },
+    { label: "Active right now",  value: "4",     sub: "trucks in transit",  trend: "flat", icon: Truck,        color: "border-t-sky-700",     iconBg: "bg-sky-600"    },
+    { label: "Delivery rate",     value: "96.4%", sub: "+2.1% vs last month",trend: "up",   icon: CheckCircle2, color: "border-t-green-700",   iconBg: "bg-green-600"  },
+    { label: "Avg trip time",     value: "2h 18m",sub: "-4min vs last month",trend: "up",   icon: Clock,        color: "border-t-violet-700",  iconBg: "bg-violet-600" },
     // { label: "Open alerts",       value: "7",     sub: "3 high severity",    trend: "down", icon: AlertTriangle, color: "bg-red-800",    iconBg: "bg-red-700"    },
-    { label: "Active drivers",    value: "10",    sub: "3 on trip today",    trend: "flat", icon: Users,        color: "bg-amber-700",   iconBg: "bg-amber-600"  },
-    { label: "GPS devices",       value: "8",     sub: "4 online, 4 at DC",  trend: "flat", icon: LocateFixed,  color: "bg-teal-700",    iconBg: "bg-teal-600"   },
-    { label: "Stores served",     value: "12",    sub: "across 4 brands",    trend: "flat", icon: MapPin,       color: "bg-cyan-700",    iconBg: "bg-cyan-600"   },
+    { label: "Active drivers",    value: "10",    sub: "3 on trip today",    trend: "flat", icon: Users,        color: "border-t-amber-700",   iconBg: "bg-amber-600"  },
+    { label: "GPS devices",       value: "8",     sub: "4 online, 4 at DC",  trend: "flat", icon: LocateFixed,  color: "border-t-teal-700",    iconBg: "bg-teal-600"   },
+    { label: "Stores served",     value: "12",    sub: "across 4 brands",    trend: "flat", icon: MapPin,       color: "border-t-cyan-700",    iconBg: "bg-cyan-600"   },
 ]
 
 // ── Reusable components ───────────────────────────────────────────────────────
 function StatCard({ label, value, sub, trend, icon: Icon, color, iconBg }) {
     const TrendIcon = trend === "up" ? TrendingUp : trend === "down" ? TrendingDown : Minus
     const trendColor = trend === "up"
-        ? "text-green-300"
+        ? "text-green-800"
         : trend === "down"
-        ? "text-red-300"
-        : "text-slate-300"
+        ? "text-red-800"
+        : "text-slate-800"
 
     return (
-        <div className={`${color} rounded-2xl p-4 flex items-start gap-3 shadow-sm`}>
+        <div className={`border-3 ${color} rounded-2xl p-4 flex items-start gap-3 shadow-sm`}>
             <div className={`${iconBg} w-11 h-11 rounded-xl flex items-center justify-center shrink-0`}>
                 <Icon size={20} color="white" strokeWidth={1.5} />
             </div>
             <div className="flex-1 min-w-0">
-                <p className="text-white/60 text-xs font-medium uppercase tracking-wider">{label}</p>
-                <p className="text-white text-2xl font-bold mt-0.5 leading-tight">{value}</p>
+                <p className="text-black/60 text-xs font-medium uppercase tracking-wider">{label}</p>
+                <p className="text-black text-2xl font-bold mt-0.5 leading-tight">{value}</p>
                 <div className={`flex items-center gap-1 mt-1 ${trendColor}`}>
                     <TrendIcon size={11} />
-                    <p className="text-[11px] leading-none">{sub}</p>
+                    <p className="text-sm leading-none">{sub}</p>
                 </div>
             </div>
         </div>
@@ -165,7 +149,7 @@ function SectionTitle({ children, action }) {
                 {/* <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 mb-0.5">
                     Analytics
                 </p> */}
-                <h2 className="text-md font-semibold text-slate-800">{children}</h2>
+                <h2 className="text-lg font-semibold text-slate-700">{children}</h2>
             </div>
             {action}
         </div>
@@ -226,6 +210,10 @@ export default function Analytics() {
     const [tripRange, setTripRange] = useState("Weekly")
     const tripData = tripRange === "Weekly" ? TRIPS_WEEKLY : TRIPS_MONTHLY
     const tripKey  = tripRange === "Weekly" ? "day" : "month"
+    const deliveryRateData =
+    tripRange === "Weekly" ? DELIVERY_RATE_TREND : DELIVERY_RATE_MONTHLY
+
+const deliveryKey = tripRange === "Weekly" ? "week" : "month"
 
     return (
         <section className="min-h-screen bg-slate-50">
@@ -241,9 +229,11 @@ export default function Analytics() {
                 {/* ── KPI stat cards ──────────────────────────────────────── */}
                 <section>
                     <SectionTitle>Platform overview</SectionTitle>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                    <div className="flex flex-wrap gap-6 justify-center items-center">
                         {STATS.map(stat => (
-                            <StatCard key={stat.label} {...stat} />
+                            <div key={stat.label} className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-12px)] max-w-90">
+                <StatCard {...stat} />
+            </div>
                         ))}
                     </div>
                 </section>
@@ -252,8 +242,8 @@ export default function Analytics() {
                 <section>
                     <SectionTitle
                         action={<RangeToggle value={tripRange} onChange={setTripRange} />}
-                    >
-                        Trip volume
+                    >   
+                        Trip volume & delivery rate
                     </SectionTitle>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
@@ -278,9 +268,9 @@ export default function Analytics() {
                         </ChartCard>
 
                         {/* Delivery rate line */}
-                        <ChartCard title="Delivery success rate" subtitle="8-week rolling trend">
+                        <ChartCard title="Delivery success rate" subtitle={tripRange === "Weekly" ? "8-week rolling trend" : "8-month trend"}>
                             <ResponsiveContainer width="100%" height={240}>
-                                <AreaChart data={DELIVERY_RATE_TREND}>
+                                <AreaChart key={tripRange} data={deliveryRateData}>
                                     <defs>
                                         <linearGradient id="rateGrad" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%"  stopColor={C.green} stopOpacity={0.15} />
@@ -288,7 +278,7 @@ export default function Analytics() {
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                                    <XAxis dataKey="week" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                                    <XAxis dataKey={deliveryKey} tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
                                     <YAxis domain={[85, 100]} tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} unit="%" />
                                     <Tooltip content={<CustomTooltip />} />
                                     <Area
@@ -391,43 +381,26 @@ export default function Analytics() {
 
                 {/* ── Driver performance + Top stores ──────────────────────── */}
                 <section>
-                    <SectionTitle>Drivers & stores</SectionTitle>
+                    <SectionTitle>Stores</SectionTitle>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
                         {/* Top stores + store delivery bar */}
                         <ChartCard title="Top stores by deliveries" subtitle="Most deliveries received — all time">
                             <ResponsiveContainer width="100%" height={200}>
-                                <BarChart data={TOP_STORES} layout="vertical" barSize={14}>
+                                <BarChart data={TOP_STORES} layout="vertical" barSize={14} margin={{left: -25}}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
                                     <XAxis type="number" tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
                                     <YAxis
                                         dataKey="store" type="category"
                                         tick={{ fontSize: 10, fill: "#64748b" }}
-                                        axisLine={false} tickLine={false} width={120}
-                                        tickFormatter={v => v.length > 18 ? v.slice(0, 17) + "…" : v}
+                                        axisLine={false} tickLine={false} width={160}
+                                        tickFormatter={(v) => (v.length > 25 ? v.slice(0, 22) + "…" : v)}
                                     />
                                     <Tooltip content={<CustomTooltip />} />
                                     <Bar dataKey="deliveries" name="Deliveries" fill={C.teal} radius={[0, 4, 4, 0]} />
                                 </BarChart>
                             </ResponsiveContainer>
 
-                            {/* Store cards */}
-                            {/* <div className="mt-4 pt-3 border-t border-slate-100">
-                                <p className="text-xs text-slate-500 mb-2">Brand distribution</p>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {[...new Set(TOP_STORES.map(s => s.brand))].map(brand => {
-                                        const count = TOP_STORES.filter(s => s.brand === brand).length
-                                        const total = TOP_STORES.filter(s => s.brand === brand).reduce((a, s) => a + s.deliveries, 0)
-                                        return (
-                                            <div key={brand} className="bg-slate-50 border border-slate-100 rounded-lg px-3 py-2">
-                                                <p className="text-xs font-semibold text-slate-700">{brand}</p>
-                                                <p className="text-sm font-bold text-slate-900">{total} <span className="text-[10px] text-slate-400 font-normal">deliveries</span></p>
-                                                <p className="text-[10px] text-slate-400">{count} store{count > 1 ? "s" : ""} in top 6</p>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            </div> */}
                         </ChartCard>
                     </div>
                 </section>
