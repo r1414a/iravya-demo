@@ -117,25 +117,25 @@ export const columns = ({ onEditDC, onDeleteDC }) => [
             )
         },
     },
-    {
-        accessorKey: "total_trucks",
-        header: "Fleet",
-        cell: ({ row }) => {
-            const { total_trucks, active_trucks, total_drivers } = row.original
-            return (
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                        <Truck size={11} className="text-gray-400" />
-                        <span>{active_trucks}/{total_trucks} trucks active</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-600">
-                        <Users size={11} className="text-gray-400" />
-                        <span>{total_drivers} drivers</span>
-                    </div>
-                </div>
-            )
-        },
-    },
+    // {
+    //     accessorKey: "total_trucks",
+    //     header: "Fleet",
+    //     cell: ({ row }) => {
+    //         const { total_trucks, active_trucks, total_drivers } = row.original
+    //         return (
+    //             <div className="flex flex-col gap-1">
+    //                 <div className="flex items-center gap-1.5 text-xs text-gray-600">
+    //                     <Truck size={11} className="text-gray-400" />
+    //                     <span>{active_trucks}/{total_trucks} trucks active</span>
+    //                 </div>
+    //                 <div className="flex items-center gap-1.5 text-xs text-gray-600">
+    //                     <Users size={11} className="text-gray-400" />
+    //                     <span>{total_drivers} drivers</span>
+    //                 </div>
+    //             </div>
+    //         )
+    //     },
+    // },
     {
         accessorKey: "active_trips",
         header: "Trips",
