@@ -45,7 +45,7 @@ export default function TripsFilter({ CreateButton, searchInput, setSearchInput,
                             )}
                     </InputGroup>
 
-                    {
+                    {/* {
                         location.pathname.startsWith("/admin") && (
                             <Select defaultValue="all_dcs">
                                 <SelectTrigger className="w-56">
@@ -62,7 +62,7 @@ export default function TripsFilter({ CreateButton, searchInput, setSearchInput,
                                 </SelectContent>
                             </Select>
                         )
-                    }
+                    } */}
 
                 </div>
                 {CreateButton && (
