@@ -67,8 +67,8 @@ export default function DCDetailDrawer({ dc, open, onClose }) {
                         </p>
                         <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3">
                             {[
-                                { icon: Truck, label: "Trucks", value: `${dc.active_trucks} active / ${dc.total_trucks} total` },
-                                { icon: Users, label: "Drivers", value: `${dc.total_drivers} registered` },
+                                // { icon: Truck, label: "Trucks", value: `${dc.active_trucks} active / ${dc.total_trucks} total` },
+                                // { icon: Users, label: "Drivers", value: `${dc.total_drivers} registered` },
                                 // { icon: LocateFixed, label: "GPS devices", value: `${dc.devicesAvailable} available / ${dc.total_devices} total` },
                                 { icon: Road, label: "Active trips", value: dc.active_trips },
                                 { icon: CheckCircle2, label: "Total trips", value: dc.total_trips },
